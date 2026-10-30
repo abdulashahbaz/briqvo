@@ -1,0 +1,38 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Settly privacy policy</title><meta name="robots" content="index,follow"><style>body{margin:0;background:#fff;color:#0b0b0b;font:17px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:56px 20px 80px}h1{font-size:2rem;line-height:1.2;margin:0 0 8px}
+h2{font-size:1.25rem;margin:2.2em 0 .4em}h3{font-size:1.05rem;margin:1.6em 0 .3em}a{color:inherit}
+.date{color:#555;margin:0 0 2em}ul{padding-left:1.2em}li{margin:.3em 0}footer{margin-top:4em;color:#555;font-size:.9rem}
+@media(prefers-color-scheme:dark){body{background:#0b0b0b;color:#f2f2f2}.date,footer{color:#aaa}}</style></head><body><main><h1>Settly privacy policy</h1>
+<p class="date">Last updated: 29 October 2026</p>
+<p>Settly is made by Briqvo (Abdullah Ventures LLC). This policy explains what happens to your information when you use the Settly app for Android and the Settly web page that invite links open.</p>
+<h2>The short version</h2>
+<ul><li>Settly has <strong>no sign-up</strong>. It doesn't ask for your phone number, email, contacts or location.</li><li>Your groups are saved on your phone. To share a group with the people in it, Settly keeps a copy on its server, visible only to that group's members.</li><li>Receipts you scan are <strong>read on your phone</strong> and never uploaded.</li><li>Settly shows one banner ad (from Google AdMob) on the Activity screen unless you buy "Remove ads". Where the law requires it, we ask for your consent first.</li><li>Purchases go through Google Play. We use RevenueCat to check whether you own "Remove ads".</li></ul>
+<h2>What you put into Settly</h2>
+<p>Group names and emoji, the names you type for people, expenses (amounts, descriptions, categories, dates, who paid and how it's split), payments you record (amount, method, date), and comments. You choose what to type; a name can be a nickname.</p>
+<p>This is saved in Settly's private storage on your phone. Uninstalling Settly deletes it from the phone.</p>
+<h2>Sharing a group (sync)</h2>
+<p>So that everyone in a group sees the same expenses and balances, Settly copies your groups to its server (Supabase, our hosting provider) and keeps them in sync. On first sync the app creates an <strong>anonymous account</strong>: a random user ID with no name, email or phone number attached. The server stores the data listed above together with that ID and which members of each group are linked to which accounts.</p>
+<p>Only members of a group can see or change it: the server enforces this for every row. Anyone holding a group's <strong>invite link</strong> can see the group's name, emoji and currency and its members' names before deciding to join, so share the link only with the people you're splitting with. Deleted expenses are kept on the server as deleted so that every phone in the group removes them too.</p>
+<h2>Joining from a link without the app</h2>
+<p>The invite link opens Settly's web page. It works the same way: an anonymous account, and the group saved in your browser's storage on that device so it also works offline. Clearing your browser data removes it from that browser.</p>
+<h2>Receipt scanning</h2>
+<p>When you tap "Scan receipt", Google's document scanner (part of Google Play services) takes the photo or lets you pick one, and Google's ML Kit text recognition reads it, both on your phone. Settly uses the text only to fill in the total, date and items for you to check. The photo is deleted straight after and is never uploaded to us.</p>
+<h2>Exchange rates</h2>
+<p>When you add an expense in another currency, the app asks the free Frankfurter service (api.frankfurter.dev) for that day's reference rate. The request contains only the two currency codes; like any web request it also reveals your IP address to that service. The rate is saved on your phone for offline use.</p>
+<h2>Notifications</h2>
+<p>If you turn on group notifications, your phone gives Settly a push token, which is stored on our server with your anonymous account. When someone joins your group, adds an expense with you in it, or records a payment with you in it, our server sends a notification through Expo's push service and Google's Firebase Cloud Messaging. The notification contains the group's name, the person's name, the description and the amounts. Turning notifications off in Settings removes the token.</p>
+<h2>Ads</h2>
+<p>The free version shows one banner on the Activity screen, starting after you add your first expense. There are never ads on the screens where you add expenses or settle up, and no full-screen ads. Ads are provided by Google AdMob. To show and measure ads, and to prevent fraud, AdMob may collect your device's advertising ID, general device information, an approximate location derived from your IP address, and how you interact with ads. In the European Economic Area, the UK and Switzerland, and wherever else the law requires, Settly shows Google's consent form before any ad is requested, and you can change your choice any time in Settings → Ad privacy choices. You can also reset or delete your advertising ID in your phone's settings.</p>
+<p>How Google uses this data: <a href="https://policies.google.com/technologies/partner-sites">policies.google.com/technologies/partner-sites</a>.</p>
+<h2>Purchases</h2>
+<p>"Remove ads" is a one-time purchase through Google Play; we never see your payment details. RevenueCat, our purchase service, receives an anonymous app user ID and your purchase history for Settly so the app knows that ads are off, including after you reinstall. See <a href="https://www.revenuecat.com/privacy">RevenueCat's privacy policy</a>.</p>
+<h2>What we don't do</h2>
+<ul><li>We don't sell your personal information or use your expenses for advertising.</li><li>We don't upload your receipt photos.</li><li>Settly never moves money. Recording a payment is a note for your group.</li><li>Settly has no analytics of its own at this time. If that changes, this policy will say so before it ships.</li></ul>
+<h2>How long we keep data</h2>
+<p>Group data stays on the server while the group exists, so its members can keep using it. Push tokens are removed when you turn notifications off or when Google reports that the app was uninstalled.</p>
+<h2>Children</h2>
+<p>Settly is not directed at children under 13, and ad requests are limited to content suitable for general audiences (rated PG).</p>
+<h2>Your choices and rights</h2>
+<p>You can turn notifications off, change ad consent in Settings, reset your advertising ID, or buy Remove ads to stop ads entirely. To have your groups and anonymous account deleted from our server, or for any other privacy question or request (including deleting purchase records held by RevenueCat), contact us at <strong><a href="mailto:briqvo@gmail.com">briqvo@gmail.com</a></strong>. Tell us the name of a group you're in so we can find it.</p>
+<h2>Changes</h2>
+<p>If this policy changes, the new version will be posted at this address with a new date.</p><footer>Briqvo · <a href="mailto:briqvo@gmail.com">briqvo@gmail.com</a></footer></main></body></html>
