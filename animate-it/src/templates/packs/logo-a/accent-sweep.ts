@@ -74,11 +74,11 @@ export const accentSweep: Recipe = {
 
     if (!x.tall) {
       // Horizontal lockup: [mark] | Name / TAGLINE
-      const L = x.pick({ landscape: 25 * u, default: 17 * u });
+      const L = x.pick({ landscape: 25 * u, default: 19 * u });
       const gap = x.pick({ landscape: 9 * u, default: 6.5 * u });
       const textMax = W - x.pick({ landscape: 30 * u, default: 16 * u }) - L - gap;
-      const nameSize = fit(x, x.c.brand, x.pick({ landscape: 13.5 * u, default: 9.6 * u }), textMax);
-      const tagSize = fit(x, x.c.tagline, x.pick({ landscape: 3.7 * u, default: 2.9 * u }), textMax, tagOpts);
+      const nameSize = fit(x, x.c.brand, x.pick({ landscape: 13.5 * u, default: 10.5 * u }), textMax);
+      const tagSize = fit(x, x.c.tagline, x.pick({ landscape: 3.7 * u, default: 3.1 * u }), textMax, tagOpts);
       const nH = titleH(x, nameSize);
       const tH = bodyH(tagSize);
       const g = x.pick({ landscape: 3.4 * u, default: 2.8 * u });

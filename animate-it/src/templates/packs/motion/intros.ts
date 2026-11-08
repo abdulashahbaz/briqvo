@@ -38,7 +38,7 @@ const channelBurst: Recipe = {
     { key: 'sub', label: 'Subtitle', default: 'New recipes every Friday' },
   ],
   variants: [
-    { name: 'Electric', palette: 'electric', fonts: 'poppins', format: 'landscape', logo: 'arc' },
+    { name: 'Electric', palette: 'electric', fonts: 'poppins', format: 'landscape', logo: 'wave' },
     { name: 'Lilac', palette: 'lilac', fonts: 'outfit', format: 'landscape', logo: 'petal', copy: { brand: 'Studio Hours', sub: 'Design tips · twice a week' } },
     { name: 'Citrus', palette: 'citrus', fonts: 'archivo', format: 'square', logo: 'stack', copy: { brand: 'Gear Garage', sub: 'Honest tech reviews' } },
     { name: 'Cyber', palette: 'cyber', fonts: 'unbounded', format: 'story', logo: 'orbit', copy: { brand: 'Late Night Lab', sub: 'Live coding every Tuesday' } },
@@ -407,7 +407,7 @@ const letterboxTitle: Recipe = {
   variants: [
     { name: 'Royal', palette: 'royal', fonts: 'serif', format: 'landscape' },
     { name: 'Midnight', palette: 'midnight', fonts: 'editorial', format: 'landscape', copy: { title: 'Northern Lights', credit: 'An Aurora Pictures original', release: 'Streaming March 2027' } },
-    { name: 'Noir', palette: 'noir', fonts: 'dmserif', format: 'story', copy: { title: 'After Hours', credit: 'A short film by Theo Marsh', release: 'Premieres Friday · 9 pm' } },
+    { name: 'Graphite', palette: 'graphite', fonts: 'dmserif', format: 'story', copy: { title: 'After Hours', credit: 'A short film by Theo Marsh', release: 'Premieres Friday · 9 pm' } },
     { name: 'Ocean', palette: 'ocean', fonts: 'fraunces', format: 'portrait', copy: { title: 'Salt & Signal', credit: 'A documentary series', release: 'Episode one out now' } },
   ],
   build(x) {

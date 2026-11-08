@@ -49,8 +49,8 @@ const shapeWipe: Recipe = {
     const S = Math.max(W, H) * 0.68;
     const e: Bez = [0.6, 0, 0.3, 1];
     const d = 1.0;
-    const tA = 1.0;
-    const tB = 1.36;
+    const tA = 0.95;
+    const tB = 1.38;
     const [cA, cB] = distinct([p.accent2, p.accent, p.bg2, shade(p.accent, -0.3)], 2);
     const sceneB = p.fg;
     const inkB = p.bg;
@@ -73,7 +73,7 @@ const shapeWipe: Recipe = {
     const maxW = W - x.pick({ landscape: 30 * u, default: 16 * u });
     const aFit = fitTitle(x, x.c.from, { maxW, maxLines: 2, max: x.pick({ landscape: 12 * u, story: 14 * u, default: 12 * u }), balance: true });
     const bFit = fitTitle(x, x.c.title, { maxW, maxLines: 2, max: x.pick({ landscape: 13 * u, story: 15 * u, default: 13 * u }), balance: true });
-    const eyeS = x.pick({ story: 3.4 * u, default: 2.8 * u });
+    const eyeS = x.pick({ story: 3.8 * u, default: 3.2 * u });
     const eye = fitBody(x, x.c.eyebrow, { maxW, max: eyeS, weight: 700, tracking: 0.24, upper: true, maxLines: 1 });
 
     return {
@@ -97,7 +97,7 @@ const shapeWipe: Recipe = {
           },
         ),
         grow('wave-a', tA, cA),
-        grow('wave-b', tA + 0.18, cB),
+        grow('wave-b', tA + 0.21, cB),
         group(
           'scene-b',
           [
@@ -275,7 +275,6 @@ const splitDoors: Recipe = {
     const sFit = fitBody(x, x.c.sub, { maxW: W - 16 * u, max: x.pick({ story: 3.6 * u, default: 3.1 * u }), maxLines: 2, balance: true });
     const titleY = cy - sFit.h / 2 - 2 * u;
     const subY = titleY + tFit.h / 2 + 5 * u;
-    const handleY = cy + dFit.px * 0.6 + 9 * u;
 
     const doorKids = (side: 'l' | 'r'): Layer[] => {
       const seamX = side === 'l' ? half : 0;
@@ -297,14 +296,6 @@ const splitDoors: Recipe = {
           tracking: 0.06,
           fill: ink,
           anim: ta.rise(0.15, { by: 'char', stagger: 0.03, dur: 0.8 }),
-        }),
-        rect(`door-${side}-handle`, {
-          x: side === 'l' ? half - 3.2 * u : 3.2 * u,
-          y: handleY,
-          w: 0.8 * u,
-          h: k([0.5, 0], [1.1, 10 * u, 'outExpo']),
-          radius: 0.4 * u,
-          fill: alpha(ink, 0.45),
         }),
       ];
     };

@@ -1,5 +1,6 @@
 /** Motion pack — seamless background loops (every track returns to its t=0 value at t=duration). */
 import type { Keyframe, Layer } from '../../../engine/types';
+import { luminance } from '../../../engine/color';
 import { type Recipe, k, rect, circle, ellipse, group, path, radial, alpha, shade, lerpColor, starPath } from '../../kit';
 import { osc, oscMap, loopOsc, smoothPath, rr } from './shared';
 
@@ -37,11 +38,14 @@ const meshLoop: Recipe = {
     const { W, H, p } = x;
     const dur = 8;
     const S = Math.max(W, H);
+    // Keep the mesh tonal: an ink-dark colour on a light palette (or vice versa) turns muddy, so swap it for a tint.
+    const lb = luminance(p.bg);
+    const soft = (c: string) => (Math.abs(luminance(c) - lb) > 0.55 ? (lb > 0.4 ? p.surface : lerpColor(p.accent, p.bg2, 0.4)) : c);
     const blobs = [
       { c: p.accent, fx: 0.18, fy: 0.22, r: 0.46, orb: 0.12, dir: 1, ph: 0 },
-      { c: p.accent2, fx: 0.86, fy: 0.3, r: 0.42, orb: 0.14, dir: -1, ph: 120 },
-      { c: lerpColor(p.accent, p.accent2, 0.5), fx: 0.72, fy: 0.86, r: 0.48, orb: 0.11, dir: 1, ph: 240 },
-      { c: shade(p.accent, 0.35), fx: 0.14, fy: 0.84, r: 0.38, orb: 0.13, dir: -1, ph: 60 },
+      { c: soft(p.accent2), fx: 0.86, fy: 0.3, r: 0.42, orb: 0.14, dir: -1, ph: 120 },
+      { c: soft(lerpColor(p.accent, p.accent2, 0.5)), fx: 0.72, fy: 0.86, r: 0.48, orb: 0.11, dir: 1, ph: 240 },
+      { c: lb > 0.4 ? shade(p.accent, -0.12) : shade(p.accent, 0.35), fx: 0.14, fy: 0.84, r: 0.38, orb: 0.13, dir: -1, ph: 60 },
       { c: p.bg2, fx: 0.5, fy: 0.52, r: 0.34, orb: 0.09, dir: 1, ph: 300 },
     ];
     const layers: Layer[] = blobs.map((b, i) =>
@@ -100,7 +104,7 @@ const pulseGrid: Recipe = {
       circle('glow', Math.max(W, H) * 0.55, {
         x: cx,
         y: cy,
-        fill: radial(0.5, 0.5, 0.7, alpha(p.accent, 0.14), alpha(p.accent, 0)),
+        fill: radial(0.5, 0.5, 0.7, alpha(p.accent, luminance(p.bg) > 0.4 ? 0.14 : 0.08), alpha(p.accent, 0)),
         scale: loopOsc(1, 0.08, dur, 1, 0),
       }),
     ];
@@ -155,9 +159,13 @@ const flowLines: Recipe = {
     const lam = x.pick({ landscape: W * 0.62, default: W * 0.92 });
     const A = x.pick({ landscape: 12 * u, story: 22 * u, portrait: 16 * u, default: 14 * u });
     const gap = x.pick({ landscape: 2.3 * u, story: 4.6 * u, portrait: 3.3 * u, default: 2.8 * u });
-    const pathW = W + lam * 2.05;
+    // Tall formats run the ribbon on a diagonal; paths are extended so their ends never enter the frame.
+    const rot = x.pick({ landscape: -6, story: -30, portrait: -20, default: -14 });
+    const ext = H * Math.abs(Math.sin((rot * Math.PI) / 180)) + 10 * u;
+    const pathW = W + lam * 2.05 + ext * 2;
     const steps = Math.ceil(pathW / (lam / 20));
-    const xTrack = k([-dur, 0], [2 * dur, -3 * lam, 'linear']);
+    const xTrack = k([-dur, -ext], [2 * dur, -3 * lam - ext, 'linear']);
+    const ribbon: Layer[] = [];
     const layers: Layer[] = [
       ellipse('glow', {
         x: x.cx,
@@ -185,7 +193,7 @@ const flowLines: Recipe = {
       const y = osc(0, 1.6 * u, dur, { t0: -dur, t1: 2 * dur, q: 0 });
       const dt = t * dur * 0.5;
       lines.push({ d, dt, y });
-      layers.push(
+      ribbon.push(
         path(`line-${i}`, d, pathW, H, {
           x: xTrack,
           y,
@@ -212,7 +220,7 @@ const flowLines: Recipe = {
         ts.push({ t: a, v: -w, e: 'hold' }, { t: a + T * 0.999, v: 1, e: 'linear' });
         te.push({ t: a, v: 0, e: 'hold' }, { t: a + T * 0.999, v: 1 + w, e: 'linear' });
       }
-      layers.push(
+      ribbon.push(
         path(`pulse-${j}`, L.d, pathW, H, {
           x: xTrack,
           y: L.y,
@@ -228,7 +236,7 @@ const flowLines: Recipe = {
         }),
       );
     });
-    layers.push(caption(x, alpha(p.fg, 0.8)));
+    layers.push(group('ribbon', ribbon, { x: x.cx, y: cy, w: W, h: H, rotation: rot }), caption(x, alpha(p.fg, 0.8)));
     return { background: radial(0.5, 0.5, 0.8, p.bg2, p.bg), layers };
   },
 };
@@ -255,6 +263,9 @@ const driftParticles: Recipe = {
     const S = Math.max(W, H);
     const a = Math.sqrt((W * H) / (1080 * 1080));
     const r = x.rand;
+    const light = luminance(p.bg) > 0.4;
+    const dust = light ? shade(p.surface, 0.6) : p.fg;
+    const glint = light ? p.accent : p.accent2;
     const layers: Layer[] = [];
     // Nebula: two soft glows on slow closed orbits.
     [
@@ -270,9 +281,9 @@ const driftParticles: Recipe = {
       ),
     );
     const depths = [
-      { id: 'far', n: Math.round(34 * a), life: dur / 2, rise: 3.5 * u, size: [0.16, 0.3], peak: [0.35, 0.9], sway: 0.4 * u },
-      { id: 'mid', n: Math.round(16 * a), life: dur / 2, rise: 8 * u, size: [0.35, 0.6], peak: [0.5, 0.95], sway: 1 * u },
-      { id: 'near', n: Math.round(7 * a), life: dur / 2, rise: 18 * u, size: [1.4, 3.0], peak: [0.6, 0.95], sway: 2.2 * u },
+      { id: 'far', n: Math.round(58 * a), life: dur / 2, rise: 3.5 * u, size: [0.18, 0.34], peak: [0.55, 1], sway: 0.4 * u },
+      { id: 'mid', n: Math.round(24 * a), life: dur / 2, rise: 8 * u, size: [0.4, 0.7], peak: [0.7, 1], sway: 1 * u },
+      { id: 'near', n: Math.round(9 * a), life: dur / 2, rise: 18 * u, size: [1.8, 3.6], peak: [0.75, 1], sway: 2.2 * u },
     ];
     depths.forEach((dp) => {
       for (let i = 0; i < dp.n; i++) {
@@ -295,22 +306,22 @@ const driftParticles: Recipe = {
         const id = `${dp.id}-${i}`;
         const rad = rr(r, dp.size[0], dp.size[1]) * u;
         if (dp.id === 'far') {
-          layers.push(circle(id, rad, { ...common, fill: p.fg }));
+          layers.push(circle(id, rad, { ...common, fill: dust }));
         } else if (dp.id === 'mid') {
-          layers.push(circle(id, rad, { ...common, fill: i % 3 === 0 ? p.accent2 : p.fg }));
+          layers.push(circle(id, rad, { ...common, fill: i % 3 === 0 ? glint : dust }));
         } else if (i % 3 === 2) {
           layers.push(
             path(id, starPath(4, 0.26), 100, 100, {
               ...common,
               w: rad * 2.2,
               h: rad * 2.2,
-              fill: shade(p.accent2, 0.4),
+              fill: light ? shade(p.surface, 0.6) : shade(p.accent2, 0.4),
               rotation: k([-Pl, 0], [dur, (90 * (dur + Pl)) / Pl, 'linear']),
             }),
           );
         } else {
-          const c = i % 2 ? p.accent : p.accent2;
-          layers.push(circle(id, rad, { ...common, fill: radial(0.5, 0.5, 0.707, alpha(shade(c, 0.3), 0.95), alpha(c, 0.45), alpha(c, 0)) }));
+          const c = i % 2 || light ? p.accent : p.accent2;
+          layers.push(circle(id, rad, { ...common, fill: radial(0.5, 0.5, 0.707, alpha(shade(c, 0.35), 1), alpha(c, 0.6), alpha(c, 0.18), alpha(c, 0)) }));
         }
       }
     });

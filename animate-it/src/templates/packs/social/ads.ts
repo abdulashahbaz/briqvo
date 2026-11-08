@@ -164,8 +164,8 @@ const flashSale: Recipe = {
     cta.layer.x = W / 2 - chipsW / 2 + ends.w + 2.4 * u;
 
     const bolts: Layer[] = [
-      [numCx - nm.total / 2 - 4 * u, yNum + nH * 0.2, 7 * u, -14, 1.2],
-      [numCx + nm.total / 2 + 3 * u, yNum + numBlockH * 0.85, 5.5 * u, 12, 1.4],
+      [numCx - nm.total / 2 - 4.5 * u, yNum + nH * 0.2, 7 * u, -14, 1.2],
+      [numCx + nm.total / 2 + 5 * u, yNum + numBlockH * 0.82, 5.5 * u, 12, 1.4],
     ].map(([bx, by, s, r, t0], i) =>
       path(`bolt-${i}`, ICONS.bolt, 24, 24, {
         x: Math.max(s / 2 + 1 * u, Math.min(W - s / 2 - 1 * u, bx)),
@@ -776,10 +776,10 @@ const appInstall: Recipe = {
     const hot = vivid(p);
 
     // Phone
-    const phH = x.pick({ landscape: 88 * u, story: 92 * u, portrait: 96 * u, default: 82 * u });
-    const phW = phH * 0.49;
-    const phX = x.pick({ landscape: W - m - 6 * u - phW / 2, story: W / 2, portrait: W - m - phW / 2 + 4 * u, default: W - m - phW / 2 + 3 * u });
-    const phY = x.pick({ landscape: H / 2 + 2 * u, story: 42 * u + phH / 2, portrait: H / 2 + 3 * u, default: H / 2 + 4 * u });
+    let phH = x.pick({ landscape: 88 * u, story: 84 * u, portrait: 92 * u, default: 82 * u });
+    let phW = phH * 0.49;
+    const phX = x.pick({ landscape: W - m - 6 * u - phW / 2, story: W / 2, portrait: W - m - phW / 2 + 8 * u, default: W - m - phW / 2 + 3 * u });
+    let phY = x.pick({ landscape: H / 2 + 2 * u, story: 41 * u + phH / 2, portrait: H / 2 + 3 * u, default: H / 2 + 4 * u });
 
     // Text column
     const colX = story ? m : m;
@@ -787,24 +787,31 @@ const appInstall: Recipe = {
     const tax = story ? 0.5 : 0;
     const tx = story ? W / 2 : colX;
     const align = story ? 'center' : 'left';
-    const hSt = fit(x, x.c.headline, { role: 'title', size: x.pick({ landscape: 10 * u, story: 10 * u, portrait: 7.6 * u, default: 7 * u }), lh: 1.02 }, colW, story ? 2 : 4);
+    const hSt = fit(x, x.c.headline, { role: 'title', size: x.pick({ landscape: 10 * u, story: 11 * u, portrait: 7.6 * u, default: 7 * u }), lh: 1.02 }, colW, story ? 2 : 4);
     const hWr = wrap(x, x.c.headline, hSt, colW);
-    const tile = x.pick({ story: 13 * u, landscape: 13 * u, default: 11 * u });
-    const nameSt: TS = { role: 'title', size: x.pick({ story: 5.6 * u, landscape: 5.4 * u, default: 4.6 * u }) };
-    const starS = x.pick({ story: 4 * u, default: 3.2 * u });
-    const rSt: TS = { role: 'body', size: x.pick({ story: 3.3 * u, default: 2.8 * u }), weight: 600 };
+    const tile = x.pick({ story: 15 * u, landscape: 15 * u, default: 13.5 * u });
+    const nameSt: TS = { role: 'title', size: x.pick({ story: 5.4 * u, landscape: 5.2 * u, default: 4.6 * u }) };
+    const starS = x.pick({ story: 3.8 * u, default: 3.2 * u });
+    const rSt: TS = { role: 'body', size: x.pick({ story: 3.2 * u, default: 2.8 * u }), weight: 600 };
     const cSt: TS = { role: 'body', size: x.pick({ story: 4.2 * u, default: 3.4 * u }), weight: 700 };
     const cH = cSt.size * 2.8;
     const nSt: TS = { role: 'body', size: x.pick({ story: 3.4 * u, default: 2.8 * u }) };
     const ratingNum = Math.max(0, Math.min(5, parseFloat(x.c.rating) || 5));
     const nameW = tw(x, x.c.brand, nameSt);
-    const appRowW = tile + 3 * u + Math.max(nameW, starS * 5.8 + 2 * u + tw(x, x.c.rating, rSt));
+    const ratingText = `${x.c.rating} · ${x.c.reviews}`;
+    const appRowW = tile + 3 * u + Math.max(nameW, starS * 5.8, tw(x, ratingText, rSt));
 
     let yHead: number, yApp: number, yCta: number, yNote: number;
     if (story) {
-      yHead = 15 * u;
-      yApp = phY + phH / 2 + 7 * u;
-      yCta = yApp + tile + 5 * u;
+      // App row, headline, phone, then the button — the phone takes whatever height is left.
+      yApp = 14 * u;
+      yHead = yApp + tile + 6 * u;
+      const phTop = yHead + hWr.h + 6 * u;
+      const bottom = H - 12 * u;
+      phH = Math.max(60 * u, Math.min(96 * u, bottom - phTop - 6 * u - cH - 2.6 * u - nSt.size * 1.35));
+      phW = phH * 0.49;
+      phY = phTop + phH / 2;
+      yCta = phTop + phH + 6 * u;
       yNote = yCta + cH + 2.6 * u;
     } else {
       const blk = tile + 7 * u + hWr.h + 7 * u + cH + 3 * u + nSt.size * 1.35;
@@ -916,7 +923,7 @@ const appInstall: Recipe = {
     );
     const st = stars('rating', {
       x: appX + tile + 3 * u,
-      y: yApp + tile * 0.72,
+      y: yApp + tile * 0.55,
       ax: 0,
       size: starS,
       gap: starS * 0.16,
@@ -950,11 +957,11 @@ const appInstall: Recipe = {
         circle('orbit', phH * 0.42, { x: phX, y: phY, stroke: alpha(p.accent, 0.25), strokeWidth: 0.25 * u, scale: to(0.6, 1, 0.3, 1.6, 'outExpo') }),
         phoneLayer,
         appTile,
-        txt(x, 'app-name', x.c.brand, nameSt, { x: appX + tile + 3 * u, y: yApp + tile * 0.28, ax: 0, align: 'left', anim: ta.slide(0.7, { stagger: 0.05 }) }),
+        txt(x, 'app-name', x.c.brand, nameSt, { x: appX + tile + 3 * u, y: yApp + tile * 0.2, ax: 0, align: 'left', anim: ta.slide(0.7, { stagger: 0.05 }) }),
         st.layer,
-        txt(x, 'app-rating', `${x.c.rating} · ${x.c.reviews}`, rSt, {
-          x: appX + tile + 3 * u + st.w + 2 * u,
-          y: yApp + tile * 0.72 + starS / 2,
+        txt(x, 'app-rating', ratingText, rSt, {
+          x: appX + tile + 3 * u,
+          y: yApp + tile * 0.86,
           ax: 0,
           align: 'left',
           fill: p.muted,

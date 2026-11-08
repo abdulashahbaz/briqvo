@@ -99,11 +99,27 @@ const wordByWord: Recipe = {
     const lh = 1.0;
     const top0 = m + 8 * u;
     const bot0 = H - m - 9 * u;
-    const fit = fitTitle(x, words.join(' '), {
+    // Break the stack at sentence punctuation ("Less noise. / More signal."); in landscape pair short
+    // sentences per line. Without punctuation, fall back to a balanced wrap.
+    const sentences: string[] = [];
+    let cur: string[] = [];
+    for (const w of words) {
+      cur.push(w);
+      if (/[.!?,;:…]$/.test(w)) {
+        sentences.push(cur.join(' '));
+        cur = [];
+      }
+    }
+    if (cur.length) sentences.push(cur.join(' '));
+    const per = x.isLandscape && sentences.length >= 3 ? 2 : 1;
+    const stackLines: string[] = [];
+    for (let i = 0; i < sentences.length; i += per) stackLines.push(sentences.slice(i, i + per).join(' '));
+    const fit = fitTitle(x, sentences.length > 1 ? stackLines.join('\n') : words.join(' '), {
       maxW: W - 2 * m - 2 * u,
       maxH: bot0 - top0,
-      max: x.pick({ landscape: 15 * u, story: 22 * u, default: 17 * u }),
+      max: x.pick({ landscape: 17 * u, story: 22 * u, default: 17 * u }),
       lineHeight: lh,
+      balance: sentences.length <= 1,
     });
     const tr = x.f.displayTracking;
     const sp = spaceWidth(f, fit.px, tr);
@@ -692,7 +708,7 @@ const splitTone: Recipe = {
       maxW: W - 2 * m,
       maxLines: x.pick({ landscape: 3, story: 5, default: 4 }),
       maxH: x.pick({ landscape: H * 0.52, story: H * 0.5, default: H * 0.56 }),
-      max: x.pick({ landscape: 12.5 * u, story: 16 * u, default: 13 * u }),
+      max: x.pick({ landscape: 15 * u, story: 16 * u, default: 13 * u }),
       lineHeight: lh,
       balance: true,
     });

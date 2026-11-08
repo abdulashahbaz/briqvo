@@ -75,8 +75,8 @@ export const maisonLockup: Recipe = {
           sx: k([1.0, 1.1], [2.9, 1, [0.2, 0.7, 0.2, 1]]),
           anim: { by: 'char', start: 1.0, dur: 1.4, stagger: 0.055, ease: 'outCubic', order: 'center', from: { opacity: 0, blur: 12, scale: 1.25 } },
         }),
-        rect('mx-rule-l', { x: cx - 2.6 * u, y: ry, ax: 1, h: 0.2 * u, fill: alpha(p.fg, 0.5), w: k([2.0, 0], [3.3, R, 'inOutCubic']) }),
-        rect('mx-rule-r', { x: cx + 2.6 * u, y: ry, ax: 0, h: 0.2 * u, fill: alpha(p.fg, 0.5), w: k([2.0, 0], [3.3, R, 'inOutCubic']) }),
+        rect('mx-rule-l', { x: cx - 2.6 * u, y: ry, ax: 1, h: 0.26 * u, fill: alpha(p.fg, 0.6), w: k([2.0, 0], [3.3, R, 'inOutCubic']) }),
+        rect('mx-rule-r', { x: cx + 2.6 * u, y: ry, ax: 0, h: 0.26 * u, fill: alpha(p.fg, 0.6), w: k([2.0, 0], [3.3, R, 'inOutCubic']) }),
         rect('mx-diamond', {
           x: cx,
           y: ry,

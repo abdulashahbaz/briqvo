@@ -1,8 +1,8 @@
 /** Category: charts — bar chart growth, donut progress, KPI stat grid. */
 import type { Ease, Keyframe, Layer } from '../../../engine/types';
 import { ease } from '../../../engine/easing';
-import { type Recipe, k, rect, circle, group, radial, alpha, lerpColor, ta, path } from '../../kit';
-import { uiTheme, heading, icon, pill, glow, fit, textW, blockH, countTo, numList, strList, smooth, areaPath, chartPts, delta, series, balance } from './ui';
+import { type Recipe, k, rect, group, radial, alpha, lerpColor, ta, path } from '../../kit';
+import { uiTheme, isDark, heading, icon, pill, glow, fit, textW, blockH, countTo, numList, strList, smooth, areaPath, chartPts, delta, series, balance } from './ui';
 
 function niceCeil(v: number): number {
   const p = Math.pow(10, Math.floor(Math.log10(Math.max(1e-9, v))));
@@ -73,7 +73,7 @@ const barGrowth: Recipe = {
     const yl = 7 * u;
     const cx0 = m + yl;
     const cw = W - m - cx0;
-    const mx = niceCeil(Math.max(...vals) * 1.16);
+    const mx = niceCeil((Math.max(...vals) * 1.12) / 4) * 4;
     const gap = 0.42;
     const bw = cw / (n + (n - 1) * gap);
     const L: Layer[] = [];
@@ -95,7 +95,7 @@ const barGrowth: Recipe = {
       const bx = cx0 + i * bw * (1 + gap) + bw / 2;
       const t = t0 + i * st;
       const last = i === n - 1;
-      const fill = last ? { kind: 'linear' as const, angle: 90, stops: [{ o: 0, c: lerpColor(p.accent, p.fg, 0.08) }, { o: 1, c: p.accent }] } : lerpColor(p.accent, p.bg, 0.68);
+      const fill = last ? { kind: 'linear' as const, angle: 90, stops: [{ o: 0, c: lerpColor(p.accent, p.fg, 0.08) }, { o: 1, c: p.accent }] } : isDark(p) ? lerpColor(p.bg2, p.fg, 0.14) : lerpColor(p.accent, p.bg, 0.7);
       const hk = k([t, 0], [t + 1.0, bh, 'outExpo']);
       L.push(rect(`bg-bar${i}`, { x: bx, y: base, ay: 1, w: bw, h: hk, radius: Math.min(bw * 0.16, 1.4 * u), fill }));
       const vs = Math.min(x.pick({ story: 3.4 * u, default: 2.6 * u }), bw * 0.36);
@@ -113,15 +113,8 @@ const barGrowth: Recipe = {
         fit(x.body(`bg-lab${i}`, labs[i] ?? '', { size: x.pick({ story: 2.8 * u, default: 2.3 * u }), x: bx, y: base + 3.4 * u, fill: last ? p.fg : p.muted, weight: last ? 700 : 500, opacity: k([t, 0], [t + 0.4, 1]) }), bw * (1 + gap) * 0.95),
       );
     });
-    // trend line over bar tops
-    const tpts: [number, number][] = vals.map((v, i) => [i * bw * (1 + gap) + bw / 2, ch - (v / mx) * ch - 5.2 * u]);
-    const tl = t0 + n * st + 0.5;
     const lastX = cx0 + (n - 1) * bw * (1 + gap) + bw / 2;
     const lastTop = base - (vals[n - 1] / mx) * ch;
-    L.push(
-      path('bg-trend', smooth(tpts, 0.8), cw, ch, { x: cx0, y: chartTop, w: cw, h: ch, ax: 0, ay: 0, stroke: alpha(p.accent, 0.55), strokeWidth: 0.3 * u, trimEnd: k([tl, 0], [tl + 1.0, 1, 'inOutCubic']) }),
-      circle('bg-trend-dot', 1.0 * u, { x: lastX, y: lastTop - 5.2 * u, fill: p.accent, scale: k([tl + 0.9, 0], [tl + 1.3, 1, 'outBack']) }),
-    );
     return {
       background: radial(0.85, 0.15, 1.0, p.bg2, p.bg),
       layers: [glow('bg-glow', { x: lastX, y: lastTop, r: ch * 0.7, color: p.accent, a: 0.16 }), ...head.layers, stat, statL, ...L],
@@ -222,19 +215,19 @@ const donutProgress: Recipe = {
       const hd = heading(x, { eyebrow: c.eyebrow, title: c.title, sub: c.sub, x: W / 2, y: x.pick({ square: 8 * u, portrait: 9 * u, default: 16 * u }), w: 84 * u, size: hs, align: 'center', pill: false, maxLines: 2, subLines: 1, t0: 0.1 });
       L.push(...hd.layers);
       if (x.isSquare) {
-        D = 50 * u;
+        D = 46 * u;
         dx = m + D / 2;
         dy = hd.bottom + (H - hd.bottom) / 2;
-        legX = dx + D / 2 + 8 * u;
+        legX = dx + D / 2 + 7 * u;
         legW = W - m - legX;
         legRow = 8.4 * u;
         legY = dy - (legRow * segs.length) / 2;
       } else {
-        D = x.pick({ portrait: 54 * u, default: 72 * u });
-        legRow = x.pick({ portrait: 9 * u, default: 11 * u });
+        D = x.pick({ portrait: 54 * u, default: 64 * u });
+        legRow = x.pick({ portrait: 9 * u, default: 10 * u });
         legCols = x.isPortrait ? 2 : 1;
         const rows = Math.ceil(segs.length / legCols);
-        const gapA = x.pick({ portrait: 7 * u, default: 12 * u });
+        const gapA = x.pick({ portrait: 7 * u, default: 10 * u });
         const avail = H - hd.bottom - x.pick({ portrait: 7 * u, default: 18 * u });
         const blockH = D + gapA + rows * legRow;
         const top = hd.bottom + (avail - blockH) / 2;
@@ -246,7 +239,7 @@ const donutProgress: Recipe = {
       }
     }
     const sw = D * 0.13;
-    const gapF = sw / (Math.PI * (D - sw)) + 0.012;
+    const gapF = 0.007;
     const T0 = 0.6;
     const dur = 1.8;
     L.push({ type: 'ellipse', id: 'dn-track', x: dx, y: dy, w: D, h: D, stroke: alpha(p.fg, 0.07), strokeWidth: sw, opacity: k([0.3, 0], [0.7, 1]) });
@@ -266,7 +259,7 @@ const donutProgress: Recipe = {
         h: D,
         stroke: cols[i % cols.length],
         strokeWidth: sw,
-        lineCap: 'round',
+        lineCap: 'butt',
         arcStart: a0,
         arcEnd: sweepTrack(a0, b0, T0, dur, 'inOutCubic'),
         scale: i === 0 ? k([T0 + dur, 1], [T0 + dur + 0.2, 1.03, 'outCubic'], [T0 + dur + 0.6, 1, 'outBack']) : 1,
@@ -294,7 +287,7 @@ const donutProgress: Recipe = {
           `dn-leg${i}`,
           [
             rect(`dn-leg${i}-sw`, { x: 0, y: legRow / 2, ax: 0, w: ls * 0.9, h: ls * 0.9, radius: ls * 0.25, fill: cols[i % cols.length] }),
-            fit(x.body(`dn-leg${i}-l`, s.l, { size: ls, x: ls * 1.6, y: legRow / 2, ax: 0, align: 'left', weight: 600, fill: p.fg }), colW - ls * 6),
+            fit(x.body(`dn-leg${i}-l`, s.l, { size: ls, x: ls * 1.6, y: legRow / 2, ax: 0, align: 'left', weight: 600, fill: p.fg }), colW - ls * 4.6),
             x.body(`dn-leg${i}-v`, `${v}%`, { size: ls, x: colW, y: legRow / 2, ax: 1, align: 'right', weight: 700, fill: p.fg, counter: { from: 0, to: v, start: t, dur: 1, suffix: '%' } }),
             rect(`dn-leg${i}-ln`, { x: 0, y: legRow, ax: 0, ay: 1, w: k([t, 0], [t + 0.8, colW, 'outExpo']), h: 0.14 * u, fill: alpha(p.fg, 0.1) }),
           ],
@@ -370,7 +363,7 @@ const kpiGrid: Recipe = {
     const bottom = H - x.pick({ landscape: 10 * u, square: 7 * u, portrait: 8 * u, default: 16 * u });
     const rowsN = 4 / colsN;
     const th = (bottom - gridTop - gap * (rowsN - 1)) / rowsN;
-    const tq = Math.min(tw / 40, th / 30) * u;
+    const tq = Math.min(tw / 36, th / 28);
     tiles.forEach(([lab, val, d, ic], i) => {
       const col = i % colsN;
       const row = Math.floor(i / colsN);
@@ -379,35 +372,37 @@ const kpiGrid: Recipe = {
       const t = 0.5 + i * 0.12;
       const up = !d.trim().startsWith('-');
       const pad = 3.2 * tq;
-      const its = 6 * tq;
+      const dt = t + 1.5;
+      const dl = delta(x, `kp-t${i}-d`, d.replace(/^[+-]/, ''), {
+        x: tw - pad,
+        y: pad + 2 * tq,
+        ax: 1,
+        size: 2.2 * tq,
+        up,
+        color: up ? ui.accent : ui.muted,
+        fill: up ? ui.chip : ui.soft,
+        opacity: k([dt, 0], [dt + 0.3, 1]),
+        scale: k([dt, 0.6], [dt + 0.5, 1, 'outBack']),
+      });
+      const its = 4.4 * tq;
       const vs = fit(
-        x.body(`kp-t${i}-v`, val, { size: 7 * tq, x: pad, y: pad + its + 5.6 * tq, ax: 0, align: 'left', weight: 700, fill: ui.text, tracking: -0.02, counter: countTo(val, t + 0.3, 1.6) }),
+        x.body(`kp-t${i}-v`, val, { size: 7.4 * tq, x: pad, y: pad + 4 * tq + 5.2 * tq, ax: 0, align: 'left', weight: 700, fill: ui.text, tracking: -0.02, counter: countTo(val, t + 0.3, 1.6) }),
         tw - pad * 2,
       );
       const vals = series(9, i * 7 + (x.seed % 5) + 3, up ? 1 : -0.6, 0.55);
-      const spH = th * 0.34;
-      const spts = chartPts(vals, tw, spH, 0.12);
+      const top = pad + 4 * tq + 10.6 * tq;
+      const spH = Math.max(th * 0.28, th - top);
+      const spts = chartPts(vals, tw, spH, 0.14);
       const sy0 = th - spH;
-      const dt = t + 1.5;
       L.push(
         group(
           `kp-t${i}`,
           [
             rect(`kp-t${i}-bg`, { x: 0, y: 0, ax: 0, ay: 0, w: tw, h: th, radius: 3 * tq, fill: ui.card, stroke: ui.border, strokeWidth: 0.15 * u }),
-            rect(`kp-t${i}-ib`, { x: pad, y: pad, ax: 0, ay: 0, w: its, h: its, radius: its * 0.3, fill: ui.chip }),
-            icon(`kp-t${i}-ic`, ic, { x: pad + its / 2, y: pad + its / 2, size: its * 0.56, color: ui.accent, weight: 2, draw: [t + 0.2, 0.6] }),
-            fit(x.body(`kp-t${i}-l`, lab, { size: 2.6 * tq, x: pad + its + 2.2 * tq, y: pad + its / 2, ax: 0, align: 'left', weight: 600, fill: ui.muted }), tw - pad * 2 - its - 2.2 * tq),
+            icon(`kp-t${i}-ic`, ic, { x: pad + its / 2, y: pad + 2 * tq, size: its, color: ui.accent, weight: 2, draw: [t + 0.2, 0.6] }),
+            fit(x.body(`kp-t${i}-l`, lab, { size: 2.6 * tq, x: pad + its + 1.4 * tq, y: pad + 2 * tq, ax: 0, align: 'left', weight: 600, fill: ui.muted }), tw - pad * 2 - its - 1.4 * tq - dl.pw - 2 * tq),
+            dl,
             vs,
-            delta(x, `kp-t${i}-d`, d.replace(/^[+-]/, ''), {
-              x: pad,
-              y: pad + its + 12.4 * tq,
-              size: 2.2 * tq,
-              up,
-              color: up ? ui.accent : ui.muted,
-              fill: up ? ui.chip : ui.soft,
-              opacity: k([dt, 0], [dt + 0.3, 1]),
-              scale: k([dt, 0.6], [dt + 0.5, 1, 'outBack']),
-            }),
             group(
               `kp-t${i}-ag`,
               [

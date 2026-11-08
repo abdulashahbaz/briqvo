@@ -41,7 +41,7 @@ export const coinFlip: Recipe = {
     const tagOpts = { body: true };
     if (horizontal) {
       const gap = x.pick({ landscape: 6 * u, default: 5 * u });
-      const textMax = W - x.pick({ landscape: 28 * u, default: 14 * u }) - D - gap;
+      const textMax = W - x.pick({ landscape: 28 * u, default: 20 * u }) - D - gap;
       nameSize = fit(x, x.c.brand, x.pick({ landscape: 13 * u, default: 10.5 * u }), textMax);
       tagSize = fit(x, x.c.tagline, x.pick({ landscape: 4.2 * u, default: 3.6 * u }), textMax, tagOpts);
       const textW = Math.max(estW(x, x.c.brand, nameSize), estW(x, x.c.tagline, tagSize, tagOpts));
