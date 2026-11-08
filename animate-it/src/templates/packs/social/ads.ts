@@ -104,6 +104,18 @@ const flashSale: Recipe = {
       oSt = { ...oSt, size: oSt.size * s };
       nm = fitNum();
     }
+    // Everything between the bands must fit: shrink the hero number if needed.
+    {
+      const regionH = bandsY[1] - bandsY[0] - bandH * 2 - 6 * u;
+      const fixedH = x.pick({ story: 4.4 * u, default: 3.6 * u }) * 1.35 + x.pick({ story: 18 * u, default: 13 * u }) + x.pick({ story: 12 * u, default: 9 * u }) * x.f.displayScale * 1.05 + x.pick({ story: 3.9 * u, default: 3.2 * u }) * 2.7;
+      const numH = (nSt.size + (tall ? oSt.size : 0)) * x.f.displayScale * 0.95;
+      if (fixedH + numH > regionH) {
+        const s = Math.max(0.6, (regionH - fixedH) / numH);
+        nSt = { ...nSt, size: nSt.size * s };
+        oSt = { ...oSt, size: oSt.size * s };
+        nm = fitNum();
+      }
+    }
     const nH = wrap(x, numText, nSt).h;
     const oH = wrap(x, x.c.off, oSt).h;
     const npSt: TS = { role: 'title', size: x.pick({ story: 12 * u, default: 9 * u }) };
@@ -155,7 +167,7 @@ const flashSale: Recipe = {
       st: cSt,
       h: cH,
       fill: hot,
-      color: readableOn(hot, '#FFFFFF', p.bg === hot ? p.fg : shade(p.bg, -0.6)),
+      color: hot === p.accent ? p.onAccent : readableOn(hot, p.fg, p.bg),
       icon: ICONS.arrowRight,
       iconRight: true,
       g: { scale: k([2.5, 0], [3.1, 1, 'spring'], [4.2, 1], [4.45, 1.06, 'inOutSine'], [4.7, 1, 'inOutSine']), opacity: to(0, 1, 2.5, 0.2) },
@@ -263,7 +275,7 @@ const productSpotlight: Recipe = {
   usesLogo: true,
   fields: [
     { key: 'brand', label: 'Brand', default: 'Aerolab' },
-    { key: 'name', label: 'Product name', default: 'Aero Bottle' },
+    { key: 'product', label: 'Product name', default: 'Aero Bottle' },
     { key: 'desc', label: 'Description', default: 'Keeps drinks ice-cold for 24 hours.', multiline: true },
     { key: 'price', label: 'Price', default: '$34' },
     { key: 'f1', label: 'Feature 1', default: 'Leak-proof' },
@@ -280,7 +292,7 @@ const productSpotlight: Recipe = {
       fonts: 'outfit',
       format: 'portrait',
       logo: 'petal',
-      copy: { brand: 'Verdant', name: 'Daily Greens', desc: 'Twelve superfoods in one tasty scoop.', price: '$42', f1: 'Vegan', f2: '30 servings', f3: 'No added sugar', cta: 'Order now' },
+      copy: { brand: 'Verdant', product: 'Daily Greens', desc: 'Twelve superfoods in one tasty scoop.', price: '$42', f1: 'Vegan', f2: '30 servings', f3: 'No added sugar', cta: 'Order now' },
     },
     {
       name: 'Royal',
@@ -288,7 +300,7 @@ const productSpotlight: Recipe = {
       fonts: 'editorial',
       format: 'story',
       logo: 'arc',
-      copy: { brand: 'Maison Ore', name: 'Nuit Parfum', desc: 'Amber, fig and smoked vanilla. Made in small batches.', price: '€89', f1: '50 ml', f2: 'Vegan', f3: 'Refillable', cta: 'Discover' },
+      copy: { brand: 'Maison Ore', product: 'Nuit Parfum', desc: 'Amber, fig and smoked vanilla. Made in small batches.', price: '€89', f1: '50 ml', f2: 'Vegan', f3: 'Refillable', cta: 'Discover' },
     },
     {
       name: 'Peach',
@@ -296,7 +308,7 @@ const productSpotlight: Recipe = {
       fonts: 'poppins',
       format: 'landscape',
       logo: 'orbit',
-      copy: { brand: 'Glowhaus', name: 'Dew Serum', desc: 'Hyaluronic hydration for a glass-skin finish.', price: '$28', f1: 'Fragrance-free', f2: 'Dermatologist tested', f3: '30 ml', cta: 'Shop now' },
+      copy: { brand: 'Glowhaus', product: 'Dew Serum', desc: 'Hyaluronic hydration for a glass-skin finish.', price: '$28', f1: 'Fragrance-free', f2: 'Dermatologist tested', f3: '30 ml', cta: 'Shop now' },
     },
   ],
   build(x) {
@@ -335,9 +347,9 @@ const productSpotlight: Recipe = {
 
     const logoS = x.pick({ story: 6 * u, default: 5 * u });
     const bSt: TS = { role: 'body', size: x.pick({ story: 3.8 * u, default: 3.3 * u }), weight: 700 };
-    const nSt = fit(x, x.c.name, { role: 'title', size: x.pick({ landscape: 11 * u, story: 12 * u, portrait: 10 * u, square: 8 * u, default: 10 * u }), lh: 1 }, colW, 2);
-    const nBW = balance(x, x.c.name, nSt, colW);
-    const nWr = wrap(x, x.c.name, nSt, nBW);
+    const nSt = fit(x, x.c.product, { role: 'title', size: x.pick({ landscape: 11 * u, story: 12 * u, portrait: 10 * u, square: 8 * u, default: 10 * u }), lh: 1 }, colW, 2);
+    const nBW = balance(x, x.c.product, nSt, colW);
+    const nWr = wrap(x, x.c.product, nSt, nBW);
     const dSt = fit(x, x.c.desc, { role: 'body', size: x.pick({ landscape: 3.6 * u, story: 4.4 * u, portrait: 3.7 * u, square: 3.3 * u, default: 3.6 * u }) }, colW, 3);
     const dBW = balance(x, x.c.desc, dSt, colW);
     const dWr = wrap(x, x.c.desc, dSt, dBW);
@@ -391,7 +403,7 @@ const productSpotlight: Recipe = {
     const pW = tw(x, x.c.price, pSt);
     const tagH = pSt.size * x.f.displayScale * 1.75;
     const tagW = pW + tagH * 0.42 + tagH * 0.75;
-    const tagX = imgX + imgW - tagW - (split ? -3 * u : 3 * u);
+    const tagX = imgX + imgW - tagW - 3 * u;
     const tagY = imgY + x.pick({ story: 8 * u, default: 6 * u });
 
     const featLayers: Layer[] = [];
@@ -489,7 +501,7 @@ const productSpotlight: Recipe = {
             scale: to(0, 1, 1.25, 0.35, 'outBack'),
           },
         ),
-        txt(x, 'name', x.c.name, nSt, { x: tx, y: yName, w: nBW, ax: tax, ay: 0, align, anim: ta.rise(0.6, { stagger: 0.08 }) }),
+        txt(x, 'name', x.c.product, nSt, { x: tx, y: yName, w: nBW, ax: tax, ay: 0, align, anim: ta.rise(0.6, { stagger: 0.08 }) }),
         txt(x, 'desc', x.c.desc, dSt, { x: tx, y: yD, w: dBW, ax: tax, ay: 0, align, fill: p.muted, anim: ta.blur(1.0, { stagger: 0.04 }) }),
         ...featLayers,
         cta.layer,
@@ -549,21 +561,21 @@ const promoCode: Recipe = {
     const m = x.pick({ landscape: 10 * u, default: 8 * u });
     const logoS = x.pick({ story: 6 * u, default: 5 * u });
     const bSt: TS = { role: 'body', size: x.pick({ story: 3.8 * u, default: 3.3 * u }), weight: 700 };
-    const tSt = fit(x, x.c.title, { role: 'title', size: x.pick({ landscape: 12 * u, story: 14 * u, portrait: 13 * u, default: 11.5 * u }), lh: 1 }, W - m * 2, 2);
+    const tSt = fit(x, x.c.title, { role: 'title', size: x.pick({ landscape: 12 * u, story: 15 * u, portrait: 13 * u, default: 11.5 * u }), lh: 1 }, W - m * 2, 2);
     const tBW = balance(x, x.c.title, tSt, W - m * 2);
     const tWr = wrap(x, x.c.title, tSt, tBW);
-    const sSt = fit(x, x.c.sub, { role: 'body', size: x.pick({ story: 4.6 * u, default: 3.8 * u }) }, W - m * 3, 2);
+    const sSt = fit(x, x.c.sub, { role: 'body', size: x.pick({ story: 5 * u, default: 3.8 * u }) }, W - m * 3, 2);
     const sBW = balance(x, x.c.sub, sSt, W - m * 3);
     const sWr = wrap(x, x.c.sub, sSt, sBW);
-    const codeSt: TS = { role: 'title', size: x.pick({ story: 8.5 * u, default: 7 * u }), tracking: 0.12, uppercase: true };
+    const codeSt: TS = { role: 'title', size: x.pick({ story: 9.5 * u, default: 7 * u }), tracking: 0.12, uppercase: true };
     const codeW = tw(x, x.c.code, codeSt);
     const boxH = codeSt.size * x.f.displayScale * 2.1;
     const iconS = boxH * 0.34;
     const boxW = Math.min(W - m * 2, codeW + boxH * 0.9 + iconS + boxH * 0.55);
-    const toastSt: TS = { role: 'body', size: x.pick({ story: 3.6 * u, default: 3 * u }), weight: 700 };
+    const toastSt: TS = { role: 'body', size: x.pick({ story: 4.2 * u, default: 3 * u }), weight: 700 };
     const toastH = toastSt.size * 2.5;
-    const nSt = fit(x, x.c.note, { role: 'body', size: x.pick({ story: 3.6 * u, default: 3 * u }) }, W - m * 2, 1);
-    const truckD = x.pick({ story: 16 * u, default: 13 * u });
+    const nSt = fit(x, x.c.note, { role: 'body', size: x.pick({ story: 4.2 * u, default: 3 * u }) }, W - m * 2, 1);
+    const truckD = x.pick({ story: 19 * u, default: 13 * u });
 
     const gaps = x.pick({ story: [8, 4, 3, 5, 4, 5], default: [5, 3, 2.5, 4, 3, 4] }).map((g) => g * u);
     const blk = logoS + gaps[0] + truckD + gaps[1] + tWr.h + gaps[2] + sWr.h + gaps[3] + toastH + gaps[4] + boxH + gaps[5] + nSt.size * 1.35;
@@ -834,14 +846,14 @@ const appInstall: Recipe = {
     // Phone screen UI
     const screen = (sw: number, sh: number): Layer[] => {
       const s = sw / 100; // screen unit
-      const scrBg = dark ? shade(p.bg, 0.04) : '#FFFFFF';
-      const ink = dark ? p.fg : '#0B1220';
+      const scrBg = dark ? shade(p.bg, 0.04) : p.surface;
+      const ink = p.fg;
       const soft = dark ? alpha(p.fg, 0.08) : alpha(p.accent, 0.07);
       const out: Layer[] = [
         rect('scr-bg', { x: 0, y: 0, ax: 0, ay: 0, w: sw, h: sh, fill: scrBg }),
         text9('scr-time', '9:41', 6 * s, 6.5 * s, 4.2 * s, ink),
         rect('scr-batt', { x: sw - 8 * s, y: 6.5 * s, w: 7 * s, h: 3.4 * s, radius: 1 * s, fill: ink }),
-        txt(x, 'scr-hello', 'Good morning', { role: 'body', size: 4.2 * s }, { x: 7 * s, y: 18 * s, ax: 0, align: 'left', fill: dark ? p.muted : '#5B6B8C' }),
+        txt(x, 'scr-hello', 'Good morning', { role: 'body', size: 4.2 * s }, { x: 7 * s, y: 18 * s, ax: 0, align: 'left', fill: p.muted }),
         txt(x, 'scr-title', x.c.screenTitle, { role: 'title', size: 8.5 * s }, { x: 7 * s, y: 27 * s, ax: 0, align: 'left', fill: ink }),
         circle('scr-av', 5 * s, { x: sw - 12 * s, y: 22 * s, fill: linear(135, p.accent2 === ink ? p.accent : p.accent2, p.accent) }),
       ];
@@ -898,7 +910,7 @@ const appInstall: Recipe = {
         );
       }
       // Tab bar
-      out.push(rect('tab-bg', { x: 0, y: sh, ax: 0, ay: 1, w: sw, h: 20 * s, fill: dark ? shade(p.bg, 0.08) : '#F4F6FB' }));
+      out.push(rect('tab-bg', { x: 0, y: sh, ax: 0, ay: 1, w: sw, h: 20 * s, fill: dark ? shade(p.bg, 0.08) : shade(p.surface, -0.035) }));
       const tabs = [ICONS.star, ICONS.calendar, ICONS.chat, ICONS.user];
       tabs.forEach((d, i) =>
         out.push(icon(`tab-${i}`, d, { x: sw * (0.14 + i * 0.24), y: sh - 12 * s, s: 6.5 * s, color: i === 0 ? p.accent : alpha(ink, 0.35), sw: 2 })),
@@ -915,7 +927,7 @@ const appInstall: Recipe = {
         x: phX,
         y: k([0.2, phY + 40 * u], [1.4, phY, 'outExpo'], [3.7, phY - 1.2 * u, 'inOutSine'], [6, phY, 'inOutSine']),
         h: phH,
-        body: dark ? '#05070C' : '#0E1116',
+        body: dark ? shade(p.bg, -0.6) : shade(p.fg, -0.35),
         rotation: k([0.2, 10], [1.5, story ? 0 : -4, 'outExpo'], [6, story ? 0 : -2, 'inOutSine']),
         opacity: to(0, 1, 0.2, 0.3),
       },

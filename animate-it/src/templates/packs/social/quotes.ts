@@ -478,8 +478,8 @@ const reviewScore: Recipe = {
     }
     const barsH = rowH * 5 + padTop + padBot;
     const barH = rowH * 0.28;
-    const labSt: TS = { role: 'body', size: Math.min(rowH * 0.4, 3.4 * u), weight: 700 };
-    const pctSt: TS = { role: 'body', size: Math.min(rowH * 0.38, 3.2 * u), weight: 600 };
+    const labSt: TS = { role: 'body', size: Math.max(2.5 * u, Math.min(rowH * 0.5, 3.4 * u)), weight: 700 };
+    const pctSt: TS = { role: 'body', size: Math.max(2.4 * u, Math.min(rowH * 0.46, 3.2 * u)), weight: 600 };
     const labW = tw(x, '5', labSt) + labSt.size * 1.3 + 1.6 * u;
     const pctW = tw(x, '100%', pctSt);
     const bpx = x.pick({ landscape: 5 * u, default: 4.5 * u });
@@ -737,13 +737,13 @@ const postCard: Recipe = {
       txt(x, `${id}-n`, label, aSt, { x: slot(i) + iconS + 1.6 * u, y: yAct, ax: 0, align: 'left', fill: p.muted, opacity: to(0, 1, tLike - 0.85 + i * 0.08, 0.4, 'outCubic') }),
     ];
 
-    const floaters: Layer[] = Array.from({ length: 5 }, (_, i) => {
-      const t0 = tLike + 0.1 + i * 0.16;
-      const dx = (i % 2 ? 1 : -1) * (1.5 + i) * u;
-      const s = (2.6 + (i % 3) * 0.9) * u;
+    const floaters: Layer[] = Array.from({ length: 4 }, (_, i) => {
+      const t0 = tLike + 0.1 + i * 0.18;
+      const dx = (i % 2 ? 1 : -1) * (1.2 + i * 0.8) * u;
+      const s = (2.2 + (i % 3) * 0.7) * u;
       return path(`float-${i}`, ICONS.heart, 24, 24, {
         x: k([t0, likeX], [t0 + 1.6, likeX + dx, 'outSine']),
-        y: k([t0, yAct], [t0 + 1.6, yAct - (16 + i * 4) * u, 'outCubic']),
+        y: k([t0, yAct], [t0 + 1.6, yAct - (8 + i * 2.5) * u, 'outCubic']),
         w: s,
         h: s,
         fill: i % 2 ? p.accent2 : likeColor,

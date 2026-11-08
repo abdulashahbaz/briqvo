@@ -33,8 +33,8 @@ const launchDrop: Recipe = {
       copy: { brand: 'Orbitly', eyebrow: 'Just shipped', headline: 'Dark mode is here', sub: 'Easier on the eyes. Sharper on every screen.', cta: 'Update now' },
     },
     {
-      name: 'Citrus',
-      palette: 'citrus',
+      name: 'Cobalt',
+      palette: 'cobalt',
       fonts: 'archivo',
       format: 'story',
       logo: 'bolt',
@@ -238,7 +238,7 @@ const launchDrop: Recipe = {
           fill: k<string>([2.9, shade(p.muted, 0.35)], [3.3, p.accent, 'outCubic']),
           shadow: { color: alpha('#0A1633', 0.18), blur: 2.5 * u, y: 1 * u },
         }),
-        circle('toggle-knob', tgH * 0.38, { x: k([2.9, tgH / 2], [3.3, tgW - tgH / 2, 'outBack']), y: tgH / 2, fill: '#FFFFFF' }),
+        circle('toggle-knob', tgH * 0.38, { x: k([2.9, tgH / 2], [3.3, tgW - tgH / 2, 'outBack']), y: tgH / 2, fill: p.onAccent }),
       ],
       { x: tgX, y: tgY, w: tgW, h: tgH, ax: 1, scale: to(0, 1, 2.45, 0.6, 'spring') },
     );
@@ -516,7 +516,8 @@ const giveaway: Recipe = {
   fields: [
     { key: 'title', label: 'Title', default: 'Giveaway' },
     { key: 'prize', label: 'Prize', default: 'Win a creator kit worth $250', multiline: true },
-    { key: 'step1', label: 'Step 1', default: 'Follow @kitepath' },
+    { key: 'handle', label: 'Handle', default: '@kitepath' },
+    { key: 'step1', label: 'Step 1 (shown before your handle)', default: 'Follow' },
     { key: 'step2', label: 'Step 2', default: 'Like this post' },
     { key: 'step3', label: 'Step 3', default: 'Tag two friends' },
     { key: 'ends', label: 'Deadline', default: 'Ends Friday · 8 PM' },
@@ -529,21 +530,21 @@ const giveaway: Recipe = {
       palette: 'blush',
       fonts: 'poppins',
       format: 'portrait',
-      copy: { prize: 'Win our full skincare ritual set', step1: 'Follow @glowhaus', step2: 'Like this post', step3: 'Tag a friend who needs it', ends: 'Ends Sunday at midnight' },
+      copy: { prize: 'Win our full skincare ritual set', handle: '@glowhaus', step1: 'Follow', step2: 'Like this post', step3: 'Tag a friend who needs it', ends: 'Ends Sunday at midnight' },
     },
     {
       name: 'Cyber',
       palette: 'cyber',
       fonts: 'unbounded',
       format: 'story',
-      copy: { title: 'Win it', prize: 'A custom desk setup worth $900', step1: 'Follow @pixelpit', step2: 'Share to your story', step3: 'Comment your dream game', ends: 'Winner drawn Dec 1' },
+      copy: { title: 'Win it', prize: 'A custom desk setup worth $900', handle: '@pixelpit', step1: 'Follow', step2: 'Share to your story', step3: 'Comment your dream game', ends: 'Winner drawn Dec 1' },
     },
     {
       name: 'Sunset',
       palette: 'sunset',
       fonts: 'syne',
       format: 'landscape',
-      copy: { prize: 'Two weekend passes to Solstice Fest', step1: 'Follow @solsticefest', step2: 'Like and save this post', step3: 'Tag who you’re bringing', ends: 'Closes June 30' },
+      copy: { prize: 'Two weekend passes to Solstice Fest', handle: '@solsticefest', step1: 'Follow', step2: 'Like and save this post', step3: 'Tag who you’re bringing', ends: 'Closes June 30' },
     },
   ],
   build(x) {
@@ -570,7 +571,8 @@ const giveaway: Recipe = {
     // Portrait lays the three steps out as columns; everything else as a list.
     const colStepW = (W - m * 2 - stepGap * 2) / 3;
     const stepTextW = P ? colStepW : (split ? colW : W - m * 4) - badge - 2.6 * u;
-    const steps = [x.c.step1, x.c.step2, x.c.step3].map((s) => wrap(x, s, sSt, stepTextW));
+    const step1 = [x.c.step1, x.c.handle].filter((v) => v.trim()).join(' ');
+    const steps = [step1, x.c.step2, x.c.step3].map((s) => wrap(x, s, sSt, stepTextW));
     const rowH = P ? steps.map(() => badge + 2 * u + Math.max(...steps.map((s) => s.h))) : steps.map((s) => Math.max(badge, s.h));
     const stepsH = P ? rowH[0] : rowH.reduce((a, b) => a + b, 0) + stepGap * 2;
     const stepsW = P ? W - m * 2 : badge + 2.6 * u + Math.max(...steps.map((s) => s.w));

@@ -1129,6 +1129,59 @@ textarea.input {
   align-items: center;
 }
 
+.hero .container {
+  position: relative;
+}
+
+.hero-stack {
+  position: absolute;
+  top: 10px;
+  right: 24px;
+  width: 470px;
+  height: 470px;
+  pointer-events: none;
+}
+
+.hero-card {
+  position: absolute;
+  border-radius: 20px;
+  box-shadow: var(--sh-3);
+  pointer-events: auto;
+}
+
+.hero-card .tcard-media {
+  border-radius: 20px;
+}
+
+.hc-0 {
+  width: 230px;
+  left: 0;
+  top: 40px;
+  transform: rotate(-6deg);
+  z-index: 1;
+}
+
+.hc-1 {
+  width: 250px;
+  left: 120px;
+  top: 0;
+  z-index: 2;
+}
+
+.hc-2 {
+  width: 210px;
+  right: 0;
+  top: 210px;
+  transform: rotate(5deg);
+  z-index: 3;
+}
+
+@media (max-width: 1180px) {
+  .hero-stack {
+    display: none;
+  }
+}
+
 .hero-proof {
   display: flex;
   gap: 22px;

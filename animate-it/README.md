@@ -2,6 +2,10 @@
 
 Professional motion design in the browser: hundreds of editable animated templates, logo animations, animated carousels, a brand kit that re-skins the whole gallery, one-click resizing, a timeline editor, and client-side export to MP4, WebM, GIF and PNG up to 4K at 60fps.
 
+## Library today
+
+378 templates from 88 recipes across 15 categories: Logo Animations (125), Animated Carousels (52), Text Animations (25), Social Posts, Quotes & Reviews, Ads & Sales, Events & Countdowns, Intros & Titles, Backgrounds & Loops, Product & App, Device Mockups (16 each), Transitions, Charts & Data, Icons & Stickers, Creator & YouTube (12 each). Every non-carousel template renders in 4 formats.
+
 ## Run it
 
 ```bash

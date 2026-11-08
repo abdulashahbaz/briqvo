@@ -738,7 +738,7 @@ const liveNow: Recipe = {
     const L = x.isLandscape;
     const dark = readableOn(p.bg) === '#ffffff';
     const hot = vivid(p);
-    const onHot = readableOn(hot, '#FFFFFF', shade(p.bg, -0.7));
+    const onHot = hot === p.accent ? p.onAccent : readableOn(hot, p.fg, p.bg);
     const m = x.pick({ landscape: 10 * u, default: 8 * u });
     let d = x.pick({ landscape: 44 * u, story: 56 * u, portrait: 36 * u, default: 28 * u });
     let ringW = d * 0.05;

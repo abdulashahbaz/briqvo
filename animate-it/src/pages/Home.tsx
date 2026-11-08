@@ -81,6 +81,10 @@ const FAQ = [
 
 export function HomePage() {
   const wall = useMemo(pickWall, []);
+  const heroStack = useMemo(() => {
+    const byId = (id: string) => allTemplates().find((t) => t.recipe.id === id && t.variantIndex === 0);
+    return [byId('glitch-lock') ?? allTemplates()[0], byId('phone-showcase') ?? allTemplates()[1], byId('sonar-pulse') ?? allTemplates()[2]];
+  }, []);
   const logos = useMemo(() => allTemplates().filter((t) => t.category === 'logo' && t.variantIndex === 0).slice(0, 3), []);
   const carousels = useMemo(() => allTemplates().filter((t) => t.category === 'carousel' && t.variantIndex === 0).slice(0, 2), []);
   const total = allTemplates().length;
@@ -110,6 +114,13 @@ export function HomePage() {
             <a className="btn btn-outline btn-lg" href={href('/templates/logo')}>
               <Hexagon /> Animate my logo
             </a>
+          </div>
+          <div className="hero-stack" aria-hidden="true">
+            {heroStack.map((t, i) => (
+              <div key={t.id} className={`hero-card hc-${i}`}>
+                <TemplateCard t={t} format={i === 1 ? 'portrait' : 'square'} alwaysPlay compact />
+              </div>
+            ))}
           </div>
           <div className="hero-proof">
             <span>
