@@ -1,7 +1,7 @@
 /** Social posts: launch announcement, tip of the day, giveaway, hiring. */
 import type { Layer } from '../../../engine/types';
 import { type Recipe, k, rect, circle, ellipse, group, path, image, browser, radial, ta, alpha, shade, readableOn, ICONS } from '../../kit';
-import { type TS, txt, wrap, fit, tw, chip, flow, avatar, confetti, glow, brandRow, icon, ICON, burstD, to } from './util';
+import { type TS, txt, wrap, fit, tw, chip, flow, avatar, confetti, glow, brandRow, icon, ICON, burstD, to, balance } from './util';
 
 // ------------------------------------------------------------------ Launch Drop
 
@@ -64,8 +64,10 @@ const launchDrop: Recipe = {
     const bSt: TS = { role: 'body', size: x.pick({ story: 4 * u, default: 3.5 * u }), weight: 700 };
     const logoS = x.pick({ story: 6.5 * u, default: 5.5 * u });
 
-    const hW = wrap(x, x.c.headline, hSt, colW);
-    const sW = wrap(x, x.c.sub, sSt, centered ? colW * 0.86 : colW);
+    const hBW = balance(x, x.c.headline, hSt, colW);
+    const hW = wrap(x, x.c.headline, hSt, hBW);
+    const sBW = balance(x, x.c.sub, sSt, centered ? colW * 0.86 : colW);
+    const sW = wrap(x, x.c.sub, sSt, sBW);
     const eyeH = eSt.size * 2.5;
     const ctaH = cSt.size * 2.6;
 
@@ -270,7 +272,7 @@ const launchDrop: Recipe = {
         txt(x, 'headline', x.c.headline, hSt, {
           x: tx,
           y: yHead,
-          w: colW,
+          w: hBW,
           ax,
           ay: 0,
           align,
@@ -279,7 +281,7 @@ const launchDrop: Recipe = {
         txt(x, 'sub', x.c.sub, sSt, {
           x: tx,
           y: ySub,
-          w: centered ? colW * 0.86 : colW,
+          w: sBW,
           ax,
           ay: 0,
           align,
@@ -367,6 +369,7 @@ const dailyTip: Recipe = {
       bW = wrap(x, x.c.body, bSt, bodyW);
     }
     const midH = hW.h + midGap + bW.h;
+    const hBW = balance(x, x.c.headline, hSt, inner);
     const contentH = tile + midH + footH + x.pick({ story: 18 * u, default: 14 * u }) + pad * 2;
     const cardH = x.pick({ square: cardBot - cardTop, landscape: cardBot - cardTop, default: Math.min(cardBot - cardTop, Math.max(contentH + 6 * u, (cardBot - cardTop) * 0.86)) });
     const cTop = x.pick({ square: cardTop, landscape: cardTop, default: cardTop + (cardBot - cardTop - cardH) / 2 });
@@ -468,7 +471,7 @@ const dailyTip: Recipe = {
         txt(x, 'headline', x.c.headline, hSt, {
           x: ix,
           y: midTop,
-          w: inner,
+          w: hBW,
           ax: 0,
           ay: 0,
           align: 'left',
@@ -559,7 +562,8 @@ const giveaway: Recipe = {
     const tW = wrap(x, x.c.title, tSt, titleW);
     const prizeW = L ? colW : W - m * 2.5;
     const pSt = fit(x, x.c.prize, { role: 'body', size: x.pick({ landscape: 3.8 * u, story: 4.7 * u, portrait: 4.1 * u, default: 3.8 * u }), weight: 600 }, prizeW, 2);
-    const pW = wrap(x, x.c.prize, pSt, prizeW);
+    const pBW = balance(x, x.c.prize, pSt, prizeW);
+    const pW = wrap(x, x.c.prize, pSt, pBW);
     const sSt: TS = { role: 'body', size: x.pick({ landscape: 3.5 * u, story: 4.5 * u, portrait: 3.5 * u, default: 3.3 * u }), weight: 600 };
     const badge = sSt.size * 2.1;
     const stepGap = x.pick({ story: 3 * u, portrait: 3 * u, default: 2.2 * u });
@@ -744,7 +748,7 @@ const giveaway: Recipe = {
         txt(x, 'prize-t', x.c.prize, pSt, {
           x: tX,
           y: prizeY,
-          w: L ? colW : W - m * 2.5,
+          w: pBW,
           ax: tAx,
           ay: 0,
           align: L ? 'left' : 'center',
@@ -812,23 +816,28 @@ const hiring: Recipe = {
     const m = x.pick({ landscape: 9 * u, default: 7 * u });
     const colW = L ? 86 * u : W - m * 2;
     const dark = readableOn(p.bg) === '#ffffff';
-    const tSt = fit(x, x.c.title, { role: 'title', size: x.pick({ landscape: 13 * u, story: 17 * u, portrait: 15.5 * u, square: 13.5 * u, default: 14 * u }), lh: 1 }, colW, 2);
-    const tW = wrap(x, x.c.title, tSt, colW);
+    let tSt = fit(x, x.c.title, { role: 'title', size: x.pick({ landscape: 13 * u, story: 17 * u, portrait: 15.5 * u, square: 13.5 * u, default: 14 * u }), lh: 1 }, colW, 2);
+    let tBW = balance(x, x.c.title, tSt, colW);
+    let tW = wrap(x, x.c.title, tSt, tBW);
     const sSt = fit(x, x.c.sub, { role: 'body', size: x.pick({ landscape: 3.4 * u, story: 4.4 * u, portrait: 3.9 * u, default: 3.5 * u }) }, colW * (L ? 1 : 0.84), 3);
-    const sW = wrap(x, x.c.sub, sSt, colW * (L ? 1 : 0.84));
-    const rSt: TS = { role: 'body', size: x.pick({ landscape: 3.8 * u, story: 4.5 * u, portrait: 4 * u, default: 3.6 * u }), weight: 600 };
-    const rH = rSt.size * 2.5;
+    const sBW = balance(x, x.c.sub, sSt, colW * (L ? 1 : 0.84));
+    const sW = wrap(x, x.c.sub, sSt, sBW);
+    let rSt: TS = { role: 'body', size: x.pick({ landscape: 3.8 * u, story: 4.5 * u, portrait: 4 * u, default: 3.6 * u }), weight: 600 };
     const cSt: TS = { role: 'body', size: x.pick({ story: 3.9 * u, default: 3.3 * u }), weight: 700 };
     const cH = cSt.size * 2.7;
     const bSt: TS = { role: 'body', size: x.pick({ story: 4 * u, default: 3.5 * u }), weight: 700 };
     const logoS = x.pick({ story: 6.5 * u, default: 5.5 * u });
 
     const roles = [x.c.role1, x.c.role2, x.c.role3, x.c.role4].filter((r) => r.trim().length > 0);
-    const roleW = roles.map((r) => tw(x, r, rSt) + rSt.size * 0.55 + rSt.size * 0.55 + rH * 0.9);
     const gapR = x.pick({ story: 2.4 * u, default: 2 * u });
     const rowsMaxW = L ? 64 * u : colW;
-    const fl = x.isSquare ? flow(roleW, rowsMaxW, gapR) : { rows: roles.map((_, i) => [i]), rowW: roleW };
-    const rowsH = fl.rows.length * rH + (fl.rows.length - 1) * gapR;
+    const layoutRoles = () => {
+      const rH0 = rSt.size * 2.5;
+      const widths = roles.map((r) => tw(x, r, rSt) + rSt.size * 0.55 + rSt.size * 0.55 + rH0 * 0.9);
+      const f = x.isSquare ? flow(widths, rowsMaxW, gapR) : { rows: roles.map((_, i) => [i]), rowW: widths };
+      return { rH: rH0, roleW: widths, fl: f, rowsH: f.rows.length * rH0 + (f.rows.length - 1) * gapR };
+    };
+    let rl = layoutRoles();
 
     // Vertical layout
     const gapSub = 7 * u;
@@ -843,10 +852,22 @@ const hiring: Recipe = {
     } else {
       top = x.pick({ story: 17 * u, default: m });
       ctaY = x.pick({ story: H - 24 * u, default: H - m - cH });
-      const block = tW.h + gapSub + sW.h + gapChips + rowsH;
-      const free = ctaY - (top + logoS);
-      yTitle = top + logoS + Math.max(5 * u, (free - block) / 2);
+      const free = ctaY - (top + logoS) - 10 * u;
+      // Long role names or a two-line headline: shrink chips, then the headline, until it all fits.
+      for (let i = 0; i < 16 && tW.h + gapSub + sW.h + gapChips + rl.rowsH > free; i++) {
+        if (rSt.size > 2.7 * u) {
+          rSt = { ...rSt, size: rSt.size * 0.93 };
+          rl = layoutRoles();
+        } else {
+          tSt = { ...tSt, size: tSt.size * 0.93 };
+          tBW = balance(x, x.c.title, tSt, colW);
+          tW = wrap(x, x.c.title, tSt, tBW);
+        }
+      }
+      const block = tW.h + gapSub + sW.h + gapChips + rl.rowsH;
+      yTitle = top + logoS + Math.max(5 * u, (free + 10 * u - block) / 2);
     }
+    const { rH, roleW, fl, rowsH } = rl;
     const ySub = yTitle + tW.h + gapSub;
     const rowsTop = L ? (H - rowsH) / 2 : ySub + sW.h + gapChips;
     const tx = L ? m : W / 2;
@@ -953,7 +974,7 @@ const hiring: Recipe = {
         txt(x, 'title', x.c.title, tSt, {
           x: tx,
           y: yTitle,
-          w: colW,
+          w: tBW,
           ax: tax,
           ay: 0,
           align,
@@ -962,7 +983,7 @@ const hiring: Recipe = {
         txt(x, 'sub', x.c.sub, sSt, {
           x: tx,
           y: ySub,
-          w: colW * (L ? 1 : 0.84),
+          w: sBW,
           ax: tax,
           ay: 0,
           align,

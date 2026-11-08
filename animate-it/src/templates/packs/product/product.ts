@@ -205,7 +205,7 @@ const featureSpotlight: Recipe = {
     const { u, W, H, p, c } = x;
     const ui = uiTheme(p);
     const T = { card: 0.35, tg1: 1.85, tg2: 2.4, ck1: 2.75, ck2: 3.0, ck3: 3.25, publish: 3.85 };
-    const q = x.pick({ landscape: 0.86 * u, square: 0.7 * u, portrait: 0.8 * u, story: 0.9 * u, default: 0.8 * u });
+    const q = x.pick({ landscape: 0.8 * u, square: 0.7 * u, portrait: 0.8 * u, story: 0.9 * u, default: 0.8 * u });
     const cw = 100 * q;
     const ch = 95 * q;
     let ccx: number;
@@ -679,8 +679,8 @@ const launchHero: Recipe = {
     const layers: Layer[] = [
       // stage
       glow('lh-glow', { x: imgX, y: imgY, r: S * 0.95, color: p.accent, a: 0.38, scale: k([0, 0.5], [1.4, 1, 'outExpo']) }),
-      ellipseRing('lh-ring1', imgX, imgY, S * 1.34, alpha(p.fg, 0.1), 0.15 * u, 0.1, 200, p.accent, 1.0 * u),
-      ellipseRing('lh-ring2', imgX, imgY, S * 1.7, alpha(p.fg, 0.07), 0.15 * u, 0.25, 20, p.accent, 0.7 * u),
+      ellipseRing('lh-ring1', imgX, imgY, S * 1.34, alpha(p.fg, 0.1), 0.15 * u, 0.1, -40, p.accent, 1.0 * u),
+      ellipseRing('lh-ring2', imgX, imgY, S * (x.isLandscape ? 1.7 : 1.5), alpha(p.fg, 0.07), 0.15 * u, 0.25, 50, p.accent, 0.7 * u),
       // floor shadow
       ellipseShadow('lh-floor', imgX, imgY + S * 0.56, S * 0.9, S * 0.1, shade(p.bg, -0.85)),
       group(
@@ -739,7 +739,7 @@ function ellipseRing(id: string, cx: number, cy: number, d: number, color: strin
       { type: 'ellipse', id: id + '-arc', x: d / 2, y: d / 2, w: d, h: d, stroke: color, strokeWidth: sw, arcEnd: k([t0, 0], [t0 + 1.6, 1, 'inOutCubic']) },
       circle(id + '-dot', dr, { x: d / 2, y: sw / 2, fill: dot, scale: k([t0 + 1.2, 0], [t0 + 1.7, 1, 'outBack']) }),
     ],
-    { x: cx, y: cy, w: d, h: d, rotation: k([0, rot - 50], [5.5, rot + 25, 'outSine']) },
+    { x: cx, y: cy, w: d, h: d, rotation: k([0, rot - 75], [5.2, rot, 'outSine']) },
   );
 }
 

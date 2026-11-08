@@ -1,6 +1,6 @@
 import type { Layer } from '../../../engine/types';
 import { type Recipe, rect, circle, group, image, path, k, fadeIn, pop, ta, alpha, lerpColor, linear } from '../../kit';
-import { QUOTE_D, bandD, chip, fadeUp, pad2, shadowCol, slideX, smoothThrough, star, statTitle, swipeCue } from './shared';
+import { QUOTE_D, bandD, chip, fadeUp, pad2, shadowCol, slideX, smoothThrough, star, statTitle, swipeCue, tsz } from './shared';
 
 /** Testimonials: review cards floating on one ribbon that winds behind every slide. */
 export const reviewRibbon: Recipe = {
@@ -161,10 +161,10 @@ export const reviewRibbon: Recipe = {
     {
       const cx = S / 2;
       L.push(
-        statTitle(x, 'cv-rating', x.c.rating, { size: 30 * u, x: cx, y: 31 * u, lineHeight: 1, start: 0.15, dur: 1.4 }),
+        statTitle(x, 'cv-rating', x.c.rating, { size: tsz(x, 30 * u), x: cx, y: 31 * u, lineHeight: 1, start: 0.15, dur: 1.4 }),
         ...starRow('cv-star', cx, 51 * u, 6 * u, 0.5, p.accent),
         x.body('cv-count', x.c.count, { size: 3.6 * u, x: cx, y: 59 * u, weight: 600, fill: p.muted, anim: fadeUp(0.8) }),
-        x.title('cv-title', x.c.title, { size: 9.6 * u, x: cx, y: 67 * u, w: S - 2 * m, ay: 0, lineHeight: 1.02, anim: ta.riseLines(0.5, { stagger: 0.12 }) }),
+        x.title('cv-title', x.c.title, { size: tsz(x, 9.6 * u), x: cx, y: 67 * u, w: S - 2 * m, ay: 0, lineHeight: 1.02, anim: ta.riseLines(0.5, { stagger: 0.12 }) }),
         swipeCue(x, 'cv-swipe', { x: cx, y: 106 * u, ax: 0.5, bg: p.fg, fg: p.bg, t0: 1.1, dur, label: 'Read reviews' }),
       );
     }
@@ -180,7 +180,7 @@ export const reviewRibbon: Recipe = {
       const i = j + 1;
       const X = slideX(x, i);
       const cw = S - 16 * u;
-      const ch = 86 * u;
+      const ch = 88 * u;
       const id = `rv-${i}`;
       L.push(
         group(
@@ -190,9 +190,9 @@ export const reviewRibbon: Recipe = {
             path(`${id}-qm`, QUOTE_D, 24, 24, { x: cw - 12 * u, y: 12 * u, w: 14 * u, h: 14 * u, fill: alpha(p.accent, 0.16), scale: pop(0.35, 0.6) }),
             ...starRow(`${id}-st`, 7 * u + 2 * 4.6 * u * 1.22, 11 * u, 4.6 * u, 0.4, p.accent),
             x.title(`${id}-q`, q, {
-              size: 6.4 * u,
+              size: tsz(x, 6.9 * u),
               x: 7 * u,
-              y: 20 * u,
+              y: 19.5 * u,
               w: cw - 14 * u,
               ax: 0,
               ay: 0,
@@ -200,15 +200,15 @@ export const reviewRibbon: Recipe = {
               lineHeight: 1.12,
               anim: ta.rise(0.45, { stagger: 0.03, dur: 0.7 }),
             }),
-            rect(`${id}-div`, { x: 7 * u, y: 67 * u, ax: 0, w: k([0.6, 0.01], [1.4, cw - 14 * u, 'outExpo']), h: 0.2 * u, fill: alpha(p.fg, 0.1) }),
-            circle(`${id}-ring`, 7.4 * u, { x: 13.5 * u, y: 76.5 * u, fill: alpha(p.accent, 0.2), scale: pop(0.8, 0.6) }),
-            image(`${id}-av`, x.img[j], { x: 13.5 * u, y: 76.5 * u, w: 12.6 * u, h: 12.6 * u, radius: 6.3 * u, scale: pop(0.85, 0.6) }),
-            x.body(`${id}-n`, n, { size: 4 * u, x: 23.5 * u, y: 74 * u, ax: 0, align: 'left', weight: 700, fill: p.fg, anim: ta.slide(0.95, { stagger: 0.04 }) }),
-            x.body(`${id}-r`, r, { size: 3 * u, x: 23.5 * u, y: 79.5 * u, ax: 0, align: 'left', weight: 500, fill: p.muted, anim: ta.slide(1.05, { stagger: 0.03 }) }),
+            rect(`${id}-div`, { x: 7 * u, y: 70 * u, ax: 0, w: k([0.6, 0.01], [1.4, cw - 14 * u, 'outExpo']), h: 0.2 * u, fill: alpha(p.fg, 0.1) }),
+            circle(`${id}-ring`, 7.4 * u, { x: 13.5 * u, y: 79.5 * u, fill: alpha(p.accent, 0.2), scale: pop(0.8, 0.6) }),
+            image(`${id}-av`, x.img[j], { x: 13.5 * u, y: 79.5 * u, w: 12.6 * u, h: 12.6 * u, radius: 6.3 * u, scale: pop(0.85, 0.6) }),
+            x.body(`${id}-n`, n, { size: 4 * u, x: 23.5 * u, y: 77 * u, ax: 0, align: 'left', weight: 700, fill: p.fg, anim: ta.slide(0.95, { stagger: 0.04 }) }),
+            x.body(`${id}-r`, r, { size: 3 * u, x: 23.5 * u, y: 82.5 * u, ax: 0, align: 'left', weight: 500, fill: p.muted, anim: ta.slide(1.05, { stagger: 0.03 }) }),
           ],
           {
             x: X + S / 2,
-            y: k([0.1, 70 * u], [1.0, 59 * u, 'outExpo']),
+            y: k([0.1, 71 * u], [1.0, 60 * u, 'outExpo']),
             w: cw,
             h: ch,
             rotation: k([0.1, tilt[j] * 4], [1.2, tilt[j], 'outBack']),
@@ -250,7 +250,7 @@ export const reviewRibbon: Recipe = {
         circle('ct-more', av / 2, { x: x0 + 3 * step, y: 27 * u, fill: p.accent, scale: pop(0.4, 0.6) }),
         x.body('ct-more-t', x.c.more, { size: 3.4 * u, x: x0 + 3 * step, y: 27 * u, weight: 700, fill: p.onAccent, lineHeight: 1, scale: pop(0.5, 0.5) }),
         ...starRow('ct-star', cx, 41 * u, 4 * u, 0.55, p.accent),
-        x.title('ct-title', x.c.cta, { size: 8.6 * u, x: cx, y: 48 * u, w: S - 2 * m - 8 * u, ay: 0, lineHeight: 1.04, anim: ta.rise(0.5, { stagger: 0.06 }) }),
+        x.title('ct-title', x.c.cta, { size: tsz(x, 8.6 * u), x: cx, y: 48 * u, w: S - 2 * m - 8 * u, ay: 0, lineHeight: 1.04, anim: ta.rise(0.5, { stagger: 0.06 }) }),
         chip(x, 'ct-btn', x.c.ctaBtn, {
           x: cx,
           y: 77 * u,

@@ -162,6 +162,21 @@ export function fit(x: Ctx, s: string, st: TS, maxW: number, maxLines = 1, minSc
   return { ...st, size: Math.max(min, size) };
 }
 
+/** Narrowest wrap width that keeps the same line count — evens out ragged lines and orphans. */
+export function balance(x: Ctx, s: string, st: TS, maxW: number): number {
+  const base = wrap(x, s, st, maxW);
+  if (base.n <= 1 || s.includes('\n')) return maxW;
+  let lo = Math.max(base.maxWord, maxW * 0.4);
+  let hi = maxW;
+  for (let i = 0; i < 18; i++) {
+    const mid = (lo + hi) / 2;
+    if (wrap(x, s, st, mid).n <= base.n) hi = mid;
+    else lo = mid;
+  }
+  // A little slack so real glyph metrics never push a word onto an extra line.
+  return Math.min(maxW, hi * 1.03 + 2);
+}
+
 export type TOpts = Partial<Omit<TextLayer, 'type' | 'id' | 'text' | 'size' | 'font'>>;
 
 /** Text layer from a style (title → display font, body → body font). */

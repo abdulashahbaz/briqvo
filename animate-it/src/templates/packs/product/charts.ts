@@ -229,8 +229,9 @@ const donutProgress: Recipe = {
         const rows = Math.ceil(segs.length / legCols);
         const gapA = x.pick({ portrait: 7 * u, default: 10 * u });
         const avail = H - hd.bottom - x.pick({ portrait: 7 * u, default: 18 * u });
+        D = Math.max(36 * u, Math.min(D, avail - gapA - rows * legRow - 6 * u));
         const blockH = D + gapA + rows * legRow;
-        const top = hd.bottom + (avail - blockH) / 2;
+        const top = hd.bottom + Math.max(5 * u, (avail - blockH) / 2);
         dx = W / 2;
         dy = top + D / 2;
         legX = m;
@@ -364,6 +365,13 @@ const kpiGrid: Recipe = {
     const rowsN = 4 / colsN;
     const th = (bottom - gridTop - gap * (rowsN - 1)) / rowsN;
     const tq = Math.min(tw / 36, th / 28);
+    // Deltas sit in the top row unless a label would get squeezed; then they move under the value.
+    const padQ = 3.2 * tq;
+    const deltaBelow = tiles.some(([lab, , d]) => {
+      const lw = textW(x.body('kp-probe', lab, { size: 2.6 * tq, weight: 600 }));
+      const dw = textW(x.body('kp-probe2', d, { size: 2.2 * tq, weight: 700 })) + 2.2 * tq * 2.6;
+      return lw > tw - padQ * 2 - 4.4 * tq - 1.4 * tq - dw - 2 * tq;
+    });
     tiles.forEach(([lab, val, d, ic], i) => {
       const col = i % colsN;
       const row = Math.floor(i / colsN);
@@ -374,9 +382,9 @@ const kpiGrid: Recipe = {
       const pad = 3.2 * tq;
       const dt = t + 1.5;
       const dl = delta(x, `kp-t${i}-d`, d.replace(/^[+-]/, ''), {
-        x: tw - pad,
-        y: pad + 2 * tq,
-        ax: 1,
+        x: deltaBelow ? pad : tw - pad,
+        y: deltaBelow ? pad + 4 * tq + 11.2 * tq : pad + 2 * tq,
+        ax: deltaBelow ? 0 : 1,
         size: 2.2 * tq,
         up,
         color: up ? ui.accent : ui.muted,
@@ -390,7 +398,7 @@ const kpiGrid: Recipe = {
         tw - pad * 2,
       );
       const vals = series(9, i * 7 + (x.seed % 5) + 3, up ? 1 : -0.6, 0.55);
-      const top = pad + 4 * tq + 10.6 * tq;
+      const top = pad + 4 * tq + (deltaBelow ? 15.6 : 10.6) * tq;
       const spH = Math.max(th * 0.28, th - top);
       const spts = chartPts(vals, tw, spH, 0.14);
       const sy0 = th - spH;
@@ -400,7 +408,7 @@ const kpiGrid: Recipe = {
           [
             rect(`kp-t${i}-bg`, { x: 0, y: 0, ax: 0, ay: 0, w: tw, h: th, radius: 3 * tq, fill: ui.card, stroke: ui.border, strokeWidth: 0.15 * u }),
             icon(`kp-t${i}-ic`, ic, { x: pad + its / 2, y: pad + 2 * tq, size: its, color: ui.accent, weight: 2, draw: [t + 0.2, 0.6] }),
-            fit(x.body(`kp-t${i}-l`, lab, { size: 2.6 * tq, x: pad + its + 1.4 * tq, y: pad + 2 * tq, ax: 0, align: 'left', weight: 600, fill: ui.muted }), tw - pad * 2 - its - 1.4 * tq - dl.pw - 2 * tq),
+            fit(x.body(`kp-t${i}-l`, lab, { size: 2.6 * tq, x: pad + its + 1.4 * tq, y: pad + 2 * tq, ax: 0, align: 'left', weight: 600, fill: ui.muted }), tw - pad * 2 - its - 1.4 * tq - (deltaBelow ? 0 : dl.pw + 2 * tq)),
             dl,
             vs,
             group(

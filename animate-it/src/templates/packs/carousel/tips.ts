@@ -1,6 +1,6 @@
 import type { Layer } from '../../../engine/types';
 import { type Recipe, rect, group, k, tween, fadeIn, pop, ta, alpha } from '../../kit';
-import { chip, fadeUp, glow, icon, pad2, shadowCol, slideX, swipeCue } from './shared';
+import { chip, fadeUp, glow, icon, pad2, shadowCol, slideX, swipeCue, tsz } from './shared';
 
 /** Listicle: oversized numerals, fanned card cover, progress bar that fills slide by slide. */
 export const bigNumberTips: Recipe = {
@@ -150,13 +150,13 @@ export const bigNumberTips: Recipe = {
     // ---------------------------------------------------------------- cover
     {
       const X = 0;
-      L.push(glow('cv-glow', 46 * u, { x: X + S * 0.55, y: 38 * u, color: p.accent, a: 0.18, scale: tween(0.6, 1, 0, 1.6, 'outCubic') }));
+      L.push(glow('cv-glow', 46 * u, { x: X + S * 0.55, y: 35 * u, color: p.accent, a: 0.18, scale: tween(0.6, 1, 0, 1.6, 'outCubic') }));
       const fan = [3, 2, 1, 0];
       for (const j of fan) {
         const cw = 27 * u;
         const ch = 36 * u;
         const fx = X + S / 2 + (j - 1.5) * 15.5 * u;
-        const fy = 37 * u + Math.abs(j - 1.5) * 2.4 * u;
+        const fy = 34 * u + Math.abs(j - 1.5) * 2.4 * u;
         const rot = (j - 1.5) * 8.5;
         const t = 0.15 + (3 - j) * 0.09;
         const top = j === 0;
@@ -178,7 +178,7 @@ export const bigNumberTips: Recipe = {
                 shadow: { color: shadowCol(p), blur: 5 * u, y: 1.6 * u },
               }),
               x.title(`cv-card-${j}-n`, pad2(j + 1), {
-                size: 13 * u,
+                size: tsz(x, 13 * u),
                 x: 4 * u,
                 y: 4 * u,
                 ax: 0,
@@ -203,7 +203,7 @@ export const bigNumberTips: Recipe = {
       L.push(
         chip(x, 'cv-kicker', x.c.kicker, {
           x: X + m,
-          y: 66 * u,
+          y: 60.5 * u,
           size: 2.9 * u,
           fill: alpha(p.accent, 0.12),
           color: p.accent,
@@ -213,9 +213,9 @@ export const bigNumberTips: Recipe = {
           opacity: fadeIn(0.35, 0.3),
         }),
         x.title('cv-title', x.c.title, {
-          size: 11 * u,
+          size: tsz(x, 11 * u),
           x: X + m,
-          y: 71.5 * u,
+          y: 66 * u,
           w: S - 2 * m,
           ax: 0,
           ay: 0,
@@ -233,7 +233,19 @@ export const bigNumberTips: Recipe = {
       const i = n + 1;
       const X = slideX(x, i);
       L.push(
-        glow(`tp-glow-${i}`, 34 * u, { x: X + S - 16 * u, y: 32 * u, color: p.accent, a: 0.14, scale: tween(0.5, 1, 0, 1.4, 'outCubic') }),
+        x.title(`tp-echo-${i}`, pad2(i), {
+          size: 42 * u,
+          x: k([0.3, X + m - 1 * u], [1.3, X + m + 0.8 * u, 'outExpo']),
+          y: k([0.3, 16 * u], [1.3, 17.8 * u, 'outExpo']),
+          ax: 0,
+          ay: 0,
+          align: 'left',
+          lineHeight: 1,
+          fill: 'transparent',
+          stroke: alpha(p.accent, 0.45),
+          strokeWidth: 0.22 * u,
+          opacity: fadeIn(0.3, 0.6),
+        }),
         x.title(`tp-num-${i}`, pad2(i), {
           size: 42 * u,
           x: X + m - 1 * u,
@@ -246,7 +258,7 @@ export const bigNumberTips: Recipe = {
           anim: ta.rise(0.12, { by: 'char', stagger: 0.09, dur: 0.95 }),
         }),
         x.title(`tp-h-${i}`, h, {
-          size: 8.6 * u,
+          size: tsz(x, 8.6 * u),
           x: X + m,
           y: 84 * u,
           w: S - 2 * m,
@@ -299,7 +311,7 @@ export const bigNumberTips: Recipe = {
           trimEnd: k([0.55, 0], [1.3, 1, 'inOutCubic']),
         }),
         x.title('ct-title', x.c.cta, {
-          size: 8.6 * u,
+          size: tsz(x, 8.6 * u),
           x: cx,
           y: 70 * u,
           w: S - 2 * m,

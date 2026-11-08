@@ -47,6 +47,31 @@ export const slideX = (x: Ctx, i: number) => i * x.slideW;
 
 export const pad2 = (n: number) => String(n).padStart(2, '0');
 
+/** Average glyph width (em) of each display face, used to keep wide faces from overflowing. */
+const DISPLAY_CHAR_W: Record<string, number> = {
+  grotesk: 0.55,
+  sora: 0.6,
+  serif: 0.42,
+  editorial: 0.52,
+  space: 0.56,
+  mono: 0.6,
+  syne: 0.75,
+  archivo: 0.66,
+  outfit: 0.53,
+  dmserif: 0.48,
+  manrope: 0.57,
+  unbounded: 0.78,
+  anton: 0.42,
+  fraunces: 0.58,
+  poppins: 0.6,
+};
+
+/** Title size adjusted down for wide display faces (never up). */
+export function tsz(x: Ctx, size: number): number {
+  const w = (DISPLAY_CHAR_W[x.f.id] ?? 0.56) * x.f.displayScale;
+  return size * Math.min(1, 0.56 / w);
+}
+
 /** Rough text width estimate (fonts are not measured at build time). */
 export function estW(label: string, size: number, upper = false, tracking = 0): number {
   return label.length * size * ((upper ? 0.68 : 0.54) + tracking);
@@ -172,6 +197,27 @@ export function dots(x: Ctx, i: number, o: { y: number; on: string; off: string;
     );
   }
   return out;
+}
+
+/** Segmented progress bar for slide `i` (cheaper than dots on long carousels). */
+export function progress(x: Ctx, i: number, o: { y: number; on: string; off: string; t0?: number; w?: number; prefix?: string }): Layer[] {
+  const { u, slides: n, slideW: S } = x;
+  const w = o.w ?? 30 * u;
+  const X = slideX(x, i) + (S - w) / 2;
+  const t0 = o.t0 ?? 0.2;
+  const id = o.prefix ?? 'pb';
+  return [
+    rect(`${id}-bg-${i}`, { x: X, y: o.y, ax: 0, w, h: 0.9 * u, radius: 0.45 * u, fill: o.off, opacity: fadeIn(0.05, 0.4) }),
+    rect(`${id}-fg-${i}`, {
+      x: X,
+      y: o.y,
+      ax: 0,
+      w: k([t0, Math.max(0.01, (w * i) / n)], [t0 + 1, (w * (i + 1)) / n, 'inOutCubic']),
+      h: 0.9 * u,
+      radius: 0.45 * u,
+      fill: o.on,
+    }),
+  ];
 }
 
 /** "Swipe →" pill. Anchored right-centre by default. */

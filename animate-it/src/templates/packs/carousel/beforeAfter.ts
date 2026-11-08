@@ -1,7 +1,7 @@
 import type { Layer } from '../../../engine/types';
 import type { Ctx } from '../../kit';
 import { type Recipe, rect, circle, group, k, tween, fadeIn, pop, ta, alpha, lerpColor, linear } from '../../kit';
-import { chip, chipW, dots, fadeUp, glow, icon, seamLine, shadowCol, slideX, swipeCue } from './shared';
+import { chip, chipW, dots, fadeUp, glow, icon, seamLine, shadowCol, slideX, swipeCue, tsz } from './shared';
 
 /** Mock web page used on the before/after slides (card-local layers). */
 function mockPage(x: Ctx, id: string, w: number, state: 'before' | 'after'): Layer[] {
@@ -35,7 +35,7 @@ function mockPage(x: Ctx, id: string, w: number, state: 'before' | 'after'): Lay
       rect(`${id}-logo`, { x: 5 * u, y: 14 * u, ax: 0, w: 3.6 * u, h: 3.6 * u, radius: 1.8 * u, fill: p.accent }),
       ...[0, 1, 2].map((j) => rect(`${id}-nav${j}`, { x: w - 5 * u - j * 8 * u, y: 14 * u, ax: 1, w: 5.6 * u, h: 1.2 * u, radius: 0.6 * u, fill: alpha(p.fg, 0.2) })),
       x.title(`${id}-hl`, x.c.after, {
-        size: 5.2 * u,
+        size: tsz(x, 5.2 * u),
         x: 5 * u,
         y: 19.5 * u,
         w: w - 12 * u,
@@ -257,7 +257,7 @@ export const beforeAfter: Recipe = {
           opacity: fadeIn(0.3, 0.3),
         }),
         x.title('cv-title', x.c.title, {
-          size: 10.6 * u,
+          size: tsz(x, 10.6 * u),
           x: X + m,
           y: 66.5 * u,
           w: S - 2 * m,
@@ -426,7 +426,7 @@ export const beforeAfter: Recipe = {
           opacity: fadeIn(0.1, 0.4),
         }),
         x.title('fx-title', x.c.fixTitle, {
-          size: 8.2 * u,
+          size: tsz(x, 8.2 * u),
           x: X + m,
           y: 46 * u,
           w: S - 2 * m,
@@ -447,8 +447,8 @@ export const beforeAfter: Recipe = {
         const t0 = 0.5 + r * 0.15;
         L.push(
           circle(`fx-n-${r}`, 3.8 * u, { x: X + m + 3.8 * u, y: y0 + 3.4 * u, fill: p.accent, scale: pop(t0, 0.55) }),
-          x.title(`fx-nt-${r}`, String(r + 1), { size: 3.8 * u, x: X + m + 3.8 * u, y: y0 + 3.4 * u, fill: p.onAccent, lineHeight: 1, opacity: fadeIn(t0 + 0.15, 0.3) }),
-          x.title(`fx-h-${r}`, h, { size: 5.2 * u, x: X + m + 12 * u, y: y0, w: S - 2 * m - 12 * u, ax: 0, ay: 0, align: 'left', anim: ta.slide(t0 + 0.05, { stagger: 0.04 }) }),
+          x.title(`fx-nt-${r}`, String(r + 1), { size: tsz(x, 3.8 * u), x: X + m + 3.8 * u, y: y0 + 3.4 * u, fill: p.onAccent, lineHeight: 1, opacity: fadeIn(t0 + 0.15, 0.3) }),
+          x.title(`fx-h-${r}`, h, { size: tsz(x, 5.2 * u), x: X + m + 12 * u, y: y0, w: S - 2 * m - 12 * u, ax: 0, ay: 0, align: 'left', anim: ta.slide(t0 + 0.05, { stagger: 0.04 }) }),
           x.body(`fx-b-${r}`, b, {
             size: 3.5 * u,
             x: X + m + 12 * u,
@@ -476,7 +476,7 @@ export const beforeAfter: Recipe = {
         glow('ct-glow', 34 * u, { x: cx, y: 34 * u, color: p.accent, a: 0.22, scale: tween(0.4, 1, 0.1, 1.4, 'outCubic') }),
         circle('ct-badge', 11 * u, { x: cx, y: 34 * u, fill: p.accent, scale: pop(0.15, 0.8, 'spring') }),
         icon('ct-pen', 'pen', { x: cx, y: 34 * u, size: 10 * u, color: p.onAccent, sw: 1.8, trimEnd: k([0.5, 0], [1.3, 1, 'inOutCubic']) }),
-        x.title('ct-title', x.c.cta, { size: 8.6 * u, x: cx, y: 67 * u, w: S - 2 * m - 12 * u, ay: 1, lineHeight: 1.04, anim: ta.rise(0.4, { stagger: 0.06 }) }),
+        x.title('ct-title', x.c.cta, { size: tsz(x, 8.6 * u), x: cx, y: 67 * u, w: S - 2 * m - 12 * u, ay: 1, lineHeight: 1.04, anim: ta.rise(0.4, { stagger: 0.06 }) }),
         x.body('ct-sub', x.c.ctaSub, { size: 4 * u, x: cx, y: 71.5 * u, w: S - 2 * m - 4 * u, ay: 0, fill: p.muted, anim: fadeUp(0.75) }),
         chip(x, 'ct-btn', x.c.ctaBtn, {
           x: cx,

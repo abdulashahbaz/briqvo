@@ -1,6 +1,6 @@
 import type { Layer } from '../../../engine/types';
 import { type Recipe, rect, circle, group, k, fadeIn, pop, ta, alpha } from '../../kit';
-import { chip, chipW, estW, fadeUp, icon, list, pad2, seamLine, slideX, statTitle, swipeCue } from './shared';
+import { chip, chipW, estW, fadeUp, icon, list, pad2, seamLine, slideX, statTitle, swipeCue, tsz } from './shared';
 
 /** Mini case study: a chapter rail runs across the top of every slide, problem → solution → result. */
 export const caseFile: Recipe = {
@@ -36,6 +36,7 @@ export const caseFile: Recipe = {
     { key: 'cta', label: 'Final slide title', default: 'Want results like Fernway’s?', multiline: true },
     { key: 'ctaSub', label: 'Final slide line', default: 'We take on two new growth projects each quarter.', multiline: true },
     { key: 'ctaBtn', label: 'Final slide button', default: 'Book a free audit' },
+    { key: 'ctaNote', label: 'Final slide notes (· separated)', default: 'Free · 30 minutes · No strings attached' },
   ],
   variants: [
     { name: 'Graphite', palette: 'graphite', fonts: 'manrope', logo: 'stack' },
@@ -66,6 +67,7 @@ export const caseFile: Recipe = {
         cta: 'Want a calendar this full?',
         ctaSub: 'Free 20-minute website review for clinics.',
         ctaBtn: 'Book a review',
+        ctaNote: 'Free · 20 minutes · Clinics only',
       },
     },
     {
@@ -95,6 +97,7 @@ export const caseFile: Recipe = {
         cta: 'Ready to sell out on purpose?',
         ctaSub: 'We help independent food brands grow online.',
         ctaBtn: 'Book a free call',
+        ctaNote: 'Free · 30 minutes · Food brands',
       },
     },
     {
@@ -124,6 +127,7 @@ export const caseFile: Recipe = {
         cta: 'Want a greener, faster fleet?',
         ctaSub: 'Get a free route audit in two weeks.',
         ctaBtn: 'Request an audit',
+        ctaNote: 'Free · 2-week audit · Any fleet size',
       },
     },
   ],
@@ -175,7 +179,7 @@ export const caseFile: Recipe = {
         }),
         x.body('cv-client', x.c.client, { size: 3.4 * u, x: m + kw + 3 * u, y: 26 * u, ax: 0, align: 'left', weight: 700, fill: p.fg, anim: ta.slide(0.35, { stagger: 0.05 }) }),
         x.title('cv-title', x.c.title, {
-          size: 10.4 * u,
+          size: tsz(x, 10.4 * u),
           x: m,
           y: 34 * u,
           w: S - 2 * m,
@@ -204,7 +208,7 @@ export const caseFile: Recipe = {
       const step = (S - 2 * m) / n;
       const lost = new Set([2, 6]);
       L.push(
-        x.title('pb-title', x.c.problem, { size: 7.2 * u, x: X + m, y: 24 * u, w: S - 2 * m, ax: 0, ay: 0, align: 'left', lineHeight: 1.06, anim: ta.rise(0.2, { stagger: 0.04 }) }),
+        x.title('pb-title', x.c.problem, { size: tsz(x, 7.2 * u), x: X + m, y: 24 * u, w: S - 2 * m, ax: 0, ay: 0, align: 'left', lineHeight: 1.06, anim: ta.rise(0.2, { stagger: 0.04 }) }),
       );
       for (let j = 0; j < n; j++) {
         const cx = X + m + step * (j + 0.5);
@@ -230,7 +234,7 @@ export const caseFile: Recipe = {
         );
       }
       L.push(
-        statTitle(x, 'pb-stat', x.c.pain, { size: 15 * u, x: X + m, y: 77 * u, ax: 0, ay: 0, align: 'left', lineHeight: 1, fill: p.accent, start: 1.2, dur: 0.9 }),
+        statTitle(x, 'pb-stat', x.c.pain, { size: tsz(x, 15 * u), x: X + m, y: 77 * u, ax: 0, ay: 0, align: 'left', lineHeight: 1, fill: p.accent, start: 1.2, dur: 0.9 }),
         x.body('pb-lab', x.c.painLabel, { size: 4 * u, x: X + m, y: 94 * u, w: S - 2 * m - 10 * u, ax: 0, ay: 0, align: 'left', lineHeight: 1.35, fill: p.muted, anim: fadeUp(1.4) }),
       );
     }
@@ -241,7 +245,7 @@ export const caseFile: Recipe = {
       const X = slideX(x, i);
       const cw = S - 2 * m;
       const ch = 15.5 * u;
-      L.push(x.title('sl-title', x.c.solH, { size: 7.4 * u, x: X + m, y: 24 * u, w: cw, ax: 0, ay: 0, align: 'left', lineHeight: 1.05, anim: ta.rise(0.2, { stagger: 0.05 }) }));
+      L.push(x.title('sl-title', x.c.solH, { size: tsz(x, 7.4 * u), x: X + m, y: 24 * u, w: cw, ax: 0, ay: 0, align: 'left', lineHeight: 1.05, anim: ta.rise(0.2, { stagger: 0.05 }) }));
       [x.c.sol1, x.c.sol2, x.c.sol3].forEach((t, r) => {
         const t0 = 0.45 + r * 0.16;
         const y = 50 * u + r * 18.5 * u;
@@ -267,8 +271,8 @@ export const caseFile: Recipe = {
       const tw = (S - 2 * m - 4 * u) / 2;
       const th = 29 * u;
       L.push(
-        statTitle(x, 'rs-big', x.c.res, { size: 25 * u, x: X + m - 0.5 * u, y: 22 * u, ax: 0, ay: 0, align: 'left', lineHeight: 1, fill: p.accent, start: 0.2, dur: 1.5 }),
-        x.title('rs-lab', x.c.resLabel, { size: 6.6 * u, x: X + m, y: 50 * u, w: S - 2 * m, ax: 0, ay: 0, align: 'left', lineHeight: 1.05, anim: ta.rise(0.45, { stagger: 0.05 }) }),
+        statTitle(x, 'rs-big', x.c.res, { size: tsz(x, 25 * u), x: X + m - 0.5 * u, y: 22 * u, ax: 0, ay: 0, align: 'left', lineHeight: 1, fill: p.accent, start: 0.2, dur: 1.5 }),
+        x.title('rs-lab', x.c.resLabel, { size: tsz(x, 6.6 * u), x: X + m, y: 50 * u, w: S - 2 * m, ax: 0, ay: 0, align: 'left', lineHeight: 1.05, anim: ta.rise(0.45, { stagger: 0.05 }) }),
       );
       [
         [x.c.r2, x.c.r2l],
@@ -280,7 +284,7 @@ export const caseFile: Recipe = {
             `rs-t-${j}`,
             [
               rect(`rs-t-${j}-bg`, { x: 0, y: 0, ax: 0, ay: 0, w: tw, h: th, radius: 3 * u, fill: p.surface, stroke: alpha(p.fg, 0.08), strokeWidth: 0.2 * u }),
-              statTitle(x, `rs-t-${j}-v`, v, { size: 9 * u, x: 4 * u, y: 10 * u, ax: 0, align: 'left', lineHeight: 1, start: t + 0.2, dur: 1.2 }),
+              statTitle(x, `rs-t-${j}-v`, v, { size: tsz(x, 9 * u), x: 4 * u, y: 10 * u, ax: 0, align: 'left', lineHeight: 1, start: t + 0.2, dur: 1.2 }),
               x.body(`rs-t-${j}-l`, l, { size: 3.3 * u, x: 4 * u, y: 16.5 * u, w: tw - 8 * u, ax: 0, ay: 0, align: 'left', lineHeight: 1.3, fill: p.muted }),
             ],
             { x: X + m + j * (tw + 4 * u), y: k([t, 76 * u], [t + 0.8, 70 * u, 'outExpo']), w: tw, h: th, ax: 0, ay: 0, opacity: fadeIn(t, 0.35) },
@@ -294,12 +298,12 @@ export const caseFile: Recipe = {
       const i = N - 1;
       const X = slideX(x, i);
       L.push(
-        x.title('ct-title', x.c.cta, { size: 9.4 * u, x: X + m, y: 56 * u, w: S - 2 * m, ax: 0, ay: 1, align: 'left', lineHeight: 1.02, anim: ta.riseLines(0.25, { stagger: 0.12 }) }),
-        rect('ct-rule', { x: X + m, y: 61 * u, ax: 0, w: k([0.6, 0.01], [1.3, 14 * u, 'outExpo']), h: 1 * u, radius: 0.5 * u, fill: p.accent }),
-        x.body('ct-sub', x.c.ctaSub, { size: 4.2 * u, x: X + m, y: 66 * u, w: S - 2 * m, ax: 0, ay: 0, align: 'left', lineHeight: 1.38, fill: p.muted, anim: fadeUp(0.7) }),
+        x.title('ct-title', x.c.cta, { size: tsz(x, 9.4 * u), x: X + m, y: 50 * u, w: S - 2 * m, ax: 0, ay: 1, align: 'left', lineHeight: 1.02, anim: ta.riseLines(0.25, { stagger: 0.12 }) }),
+        rect('ct-rule', { x: X + m, y: 55 * u, ax: 0, w: k([0.6, 0.01], [1.3, 14 * u, 'outExpo']), h: 1 * u, radius: 0.5 * u, fill: p.accent }),
+        x.body('ct-sub', x.c.ctaSub, { size: 4.2 * u, x: X + m, y: 60 * u, w: S - 2 * m, ax: 0, ay: 0, align: 'left', lineHeight: 1.38, fill: p.muted, anim: fadeUp(0.7) }),
         chip(x, 'ct-btn', x.c.ctaBtn, {
           x: X + m,
-          y: 86 * u,
+          y: 80 * u,
           size: 3.4 * u,
           fill: p.accent,
           color: p.onAccent,
@@ -308,6 +312,12 @@ export const caseFile: Recipe = {
           opacity: fadeIn(1.0, 0.25),
         }),
       );
+      list(x.c.ctaNote, /\s*·\s*/).forEach((t, j) => {
+        L.push(
+          icon(`ct-n-ic-${j}`, 'check', { x: X + m + 2 * u, y: (92 + j * 5.6) * u, size: 3.4 * u, color: p.accent, sw: 2.6, trimEnd: k([1.3 + j * 0.12, 0], [1.6 + j * 0.12, 1, 'outCubic']) }),
+          x.body(`ct-n-${j}`, t, { size: 3.3 * u, x: X + m + 5.6 * u, y: (92 + j * 5.6) * u, ax: 0, align: 'left', weight: 600, fill: p.fg, anim: ta.slide(1.3 + j * 0.12, { stagger: 0.03 }) }),
+        );
+      });
     }
 
     return { layers: L };

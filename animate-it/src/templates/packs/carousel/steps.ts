@@ -1,6 +1,6 @@
 import type { Layer } from '../../../engine/types';
 import { type Recipe, circle, k, fadeIn, pop, ta, alpha } from '../../kit';
-import { chip, dots, fadeUp, glow, icon, pad2, seamDots, seamLine, slideX, smoothThrough, swipeCue } from './shared';
+import { chip, dots, fadeUp, glow, icon, pad2, seamDots, seamLine, slideX, smoothThrough, swipeCue, tsz } from './shared';
 
 /** Process carousel: one winding route draws itself through every slide, each step a node on it. */
 export const stepPath: Recipe = {
@@ -159,7 +159,7 @@ export const stepPath: Recipe = {
         opacity: fadeIn(0.3, 0.3),
       }),
       x.title('cv-title', x.c.title, {
-        size: 11 * u,
+        size: tsz(x, 11 * u),
         x: m,
         y: 63.5 * u,
         w: S - 2 * m,
@@ -193,7 +193,7 @@ export const stepPath: Recipe = {
           scale: k([ta0, 0], [ta0 + 0.7, 1, 'outBack'], [ta0 + 1.6, 0.86, 'inOutSine'], [ta0 + 2.6, 1, 'inOutSine'], [dur, 0.9, 'inOutSine']),
         }),
         circle(`st-node-${i}`, 7.2 * u, { x: cx, y: nodeY, fill: p.accent, stroke: p.bg, strokeWidth: 0.8 * u, scale: pop(ta0, 0.6) }),
-        x.title(`st-num-${i}`, String(i), { size: 6.4 * u, x: cx, y: nodeY, fill: p.onAccent, lineHeight: 1, scale: pop(ta0 + 0.1, 0.6) }),
+        x.title(`st-num-${i}`, String(i), { size: tsz(x, 6.4 * u), x: cx, y: nodeY, fill: p.onAccent, lineHeight: 1, scale: pop(ta0 + 0.1, 0.6) }),
         chip(x, `st-time-${i}`, t, {
           x: X + m,
           y: 56 * u,
@@ -206,7 +206,7 @@ export const stepPath: Recipe = {
           scale: k([0.35, 0.8], [0.85, 1, 'outBack']),
         }),
         x.title(`st-h-${i}`, h, {
-          size: 8.8 * u,
+          size: tsz(x, 8.8 * u),
           x: X + m,
           y: 82 * u,
           w: S - 2 * m,
@@ -249,7 +249,7 @@ export const stepPath: Recipe = {
         }),
         circle('ct-node', 10 * u, { x: cx, y: 30 * u, fill: p.accent, stroke: p.bg, strokeWidth: 0.9 * u, scale: pop(tf, 0.7, 'spring') }),
         icon('ct-flag', 'flag', { x: cx + 0.6 * u, y: 30 * u, size: 9 * u, color: p.onAccent, sw: 2, trimEnd: k([tf + 0.2, 0], [tf + 0.9, 1, 'inOutCubic']) }),
-        x.title('ct-title', x.c.cta, { size: 9 * u, x: cx, y: 70 * u, w: S - 2 * m - 10 * u, ay: 1, lineHeight: 1.04, anim: ta.rise(0.5, { stagger: 0.06 }) }),
+        x.title('ct-title', x.c.cta, { size: tsz(x, 9 * u), x: cx, y: 70 * u, w: S - 2 * m - 10 * u, ay: 1, lineHeight: 1.04, anim: ta.rise(0.5, { stagger: 0.06 }) }),
         x.body('ct-sub', x.c.ctaSub, { size: 4 * u, x: cx, y: 74.5 * u, w: S - 2 * m - 6 * u, ay: 0, fill: p.muted, anim: fadeUp(0.85) }),
         chip(x, 'ct-follow', `Follow ${x.c.handle}`, {
           x: cx,

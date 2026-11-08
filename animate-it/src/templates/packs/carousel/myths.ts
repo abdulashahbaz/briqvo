@@ -1,13 +1,13 @@
 import type { Layer } from '../../../engine/types';
 import { type Recipe, rect, circle, group, k, fadeIn, pop, ta, alpha } from '../../kit';
-import { chip, chipW, dots, fadeUp, glow, icon, pad2, shadowCol, slideX, swipeCue } from './shared';
+import { chip, chipW, dots, fadeUp, glow, icon, pad2, shadowCol, slideX, swipeCue, tsz } from './shared';
 
 /** Myth vs fact: the myth gets stamped “busted”, then the fact slides up on a bold sheet. */
 export const mythFact: Recipe = {
   id: 'carousel-myth-fact',
   name: 'Myth vs Fact',
   category: 'carousel',
-  tags: ['carousel', 'myth', 'fact', 'educational', 'debunk', 'tips', 'new'],
+  tags: ['carousel', 'myth', 'fact', 'educational', 'debunk', 'tips'],
   description: 'Toggle-switch cover, three myths stamped “busted” with the fact rising on a bold sheet, and a comment-bait finale.',
   duration: 5,
   slides: 5,
@@ -150,7 +150,7 @@ export const mythFact: Recipe = {
           trimEnd: k([s1 - 0.2, 0], [s1 + 0.3, 1, 'outCubic']),
         }),
         x.title('cv-myth', 'Myth', {
-          size: 6.4 * u,
+          size: tsz(x, 6.4 * u),
           x: cx - tw / 2 - 4 * u,
           y: ty,
           ax: 1,
@@ -160,7 +160,7 @@ export const mythFact: Recipe = {
           anim: ta.slide(0.25, { by: 'char', stagger: 0.03 }),
         }),
         x.title('cv-fact', 'Fact', {
-          size: 6.4 * u,
+          size: tsz(x, 6.4 * u),
           x: cx + tw / 2 + 4 * u,
           y: ty,
           ax: 0,
@@ -181,7 +181,7 @@ export const mythFact: Recipe = {
           opacity: fadeIn(0.4, 0.3),
         }),
         x.title('cv-title', x.c.title, {
-          size: 10.8 * u,
+          size: tsz(x, 10.8 * u),
           x: m,
           y: 66.5 * u,
           w: S - 2 * m,
@@ -221,7 +221,7 @@ export const mythFact: Recipe = {
           scale: k([0.1, 0.8], [0.5, 1, 'outBack']),
         }),
         x.title(`my-t-${i}`, `“${myth}”`, {
-          size: 7.6 * u,
+          size: tsz(x, 7.6 * u),
           x: X + m,
           y: 27.5 * u,
           w: S - 2 * m,
@@ -256,14 +256,14 @@ export const mythFact: Recipe = {
           opacity: fadeIn(0.95, 0.3),
         }),
         x.body(`fc-t-${i}`, fact, {
-          size: 4.7 * u,
+          size: 5.2 * u,
           x: X + m,
-          y: 78.5 * u,
+          y: 79 * u,
           w: S - 2 * m,
           ax: 0,
           ay: 0,
           align: 'left',
-          lineHeight: 1.38,
+          lineHeight: 1.36,
           weight: 600,
           fill: p.onAccent,
           anim: fadeUp(1.1, { stagger: 0.02 }),
@@ -273,7 +273,7 @@ export const mythFact: Recipe = {
           [
             rect(`my-stamp-${i}-bg`, { x: 0, y: 0, ax: 0, ay: 0, w: sw, h: 9 * u, radius: 1.4 * u, fill: p.fg, shadow: { color: shadowCol(p, 0.25), blur: 2.5 * u, y: 1 * u } }),
             rect(`my-stamp-${i}-in`, { x: 1 * u, y: 1 * u, ax: 0, ay: 0, w: sw - 2 * u, h: 7 * u, radius: 0.8 * u, stroke: alpha(p.bg, 0.5), strokeWidth: 0.25 * u }),
-            x.title(`my-stamp-${i}-t`, stamp, { size: 4.4 * u, x: sw / 2, y: 4.5 * u, fill: p.bg, uppercase: true, tracking: 0.08, lineHeight: 1 }),
+            x.title(`my-stamp-${i}-t`, stamp, { size: tsz(x, 4.4 * u), x: sw / 2, y: 4.5 * u, fill: p.bg, uppercase: true, tracking: 0.08, lineHeight: 1 }),
           ],
           {
             x: X + S - m,
@@ -314,7 +314,7 @@ export const mythFact: Recipe = {
             scale: k([1.0 + j * 0.15, 1], [1.35 + j * 0.15, 1.35, 'inOutSine'], [1.7 + j * 0.15, 1, 'inOutSine'], [2.4 + j * 0.15, 1], [2.75 + j * 0.15, 1.35, 'inOutSine'], [3.1 + j * 0.15, 1, 'inOutSine']),
           }),
         ),
-        x.title('ct-title', x.c.cta, { size: 8.8 * u, x: cx, y: 68 * u, w: S - 2 * m - 10 * u, ay: 1, lineHeight: 1.04, anim: ta.rise(0.45, { stagger: 0.06 }) }),
+        x.title('ct-title', x.c.cta, { size: tsz(x, 8.8 * u), x: cx, y: 68 * u, w: S - 2 * m - 10 * u, ay: 1, lineHeight: 1.04, anim: ta.rise(0.45, { stagger: 0.06 }) }),
         x.body('ct-sub', x.c.ctaSub, { size: 4 * u, x: cx, y: 72.5 * u, w: S - 2 * m - 6 * u, ay: 0, fill: p.muted, anim: fadeUp(0.8) }),
         chip(x, 'ct-c1', c1, { x: x0, y: 94 * u, size: 3.2 * u, fill: p.fg, color: p.bg, icon: 'chat', scale: k([1.0, 0.6], [1.5, 1, 'outBack']), opacity: fadeIn(1.0, 0.25) }),
         chip(x, 'ct-c2', c2, { x: x0 + w1 + gap, y: 94 * u, size: 3.2 * u, fill: p.accent, color: p.onAccent, icon: 'bookmark', scale: k([1.12, 0.6], [1.62, 1, 'outBack']), opacity: fadeIn(1.12, 0.25) }),

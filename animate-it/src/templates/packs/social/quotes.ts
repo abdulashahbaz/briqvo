@@ -1,7 +1,7 @@
 /** Quotes & reviews: big quote, testimonial, review score, social post card. */
 import type { Layer } from '../../../engine/types';
 import { type Recipe, k, rect, circle, group, path, radial, ta, alpha, shade, readableOn, ICONS } from '../../kit';
-import { type TS, txt, wrap, fit, tw, chip, stars, avatar, glow, brandRow, icon, ICON, burstD, to, num, splitNum, vivid } from './util';
+import { type TS, txt, wrap, fit, tw, chip, stars, avatar, glow, brandRow, icon, ICON, burstD, to, num, splitNum, vivid, balance } from './util';
 
 /** One quotation mark (“-style, head at the bottom) in a 26×36 box, offset by `ox`. */
 function markD(ox = 0): string {
@@ -65,7 +65,8 @@ const bigQuote: Recipe = {
       qW,
       x.pick({ landscape: 4, story: 7, portrait: 6, default: 5 }),
     );
-    const qWr = wrap(x, x.c.quote, qSt, qW);
+    const qBW = balance(x, x.c.quote, qSt, qW);
+    const qWr = wrap(x, x.c.quote, qSt, qBW);
     const markH = x.pick({ landscape: 12 * u, story: 17 * u, portrait: 15 * u, default: 13 * u });
     const markW = (markH * 26) / 36;
     const nSt: TS = { role: 'body', size: x.pick({ story: 4.4 * u, default: 3.7 * u }), weight: 700 };
@@ -121,7 +122,7 @@ const bigQuote: Recipe = {
         txt(x, 'quote', x.c.quote, qSt, {
           x: m,
           y: yQuote,
-          w: qW,
+          w: qBW,
           ax: 0,
           ay: 0,
           align: 'left',
@@ -203,7 +204,8 @@ const testimonial: Recipe = {
     const d = x.pick({ story: 28 * u, landscape: 18 * u, default: 19 * u });
     const starS = x.pick({ story: 7.2 * u, default: 5.2 * u });
     const qSt = fit(x, x.c.quote, { role: 'title', size: x.pick({ landscape: 6 * u, story: 8.4 * u, portrait: 6.6 * u, default: 5.8 * u }), lh: 1.16 }, inner, x.pick({ landscape: 3, story: 7, default: 5 }));
-    const qWr = wrap(x, x.c.quote, qSt, inner);
+    const qBW = balance(x, x.c.quote, qSt, inner);
+    const qWr = wrap(x, x.c.quote, qSt, qBW);
     const nSt: TS = { role: 'body', size: x.pick({ story: 5 * u, default: 3.6 * u }), weight: 700 };
     const rSt: TS = { role: 'body', size: x.pick({ story: 4 * u, default: 3 * u }) };
     const lSt = fit(x, x.c.label, { role: 'body', size: x.pick({ story: 3.8 * u, default: 2.8 * u }), weight: 700, uppercase: true, tracking: 0.16 }, W - 16 * u, 1);
@@ -304,7 +306,7 @@ const testimonial: Recipe = {
         txt(x, 'quote', x.c.quote, qSt, {
           x: cx,
           y: yQuote,
-          w: inner,
+          w: qBW,
           ay: 0,
           anim: ta.blur(1.45, { stagger: 0.045 }),
         }),
@@ -415,6 +417,16 @@ const reviewScore: Recipe = {
         ms = measureScore();
       }
     }
+    if (mode === 'stack') {
+      // Long headings: shrink the hero score so the whole stack stays inside the story safe area.
+      const est =
+        x.pick({ story: 6.4 * u, default: 5.2 * u }) + 7 * u + tWr.h + 6 * u + wrap(x, scoreText, scoreSt).h + 3 * u + starS + 4 * u + cSt.size * 1.35 + 8 * u + 8 * u * 5 + 12 * u;
+      const avail = H - 30 * u;
+      if (est > avail) {
+        scoreSt = { ...scoreSt, size: Math.max(scoreSt.size * 0.6, scoreSt.size - ((est - avail) * 0.7) / x.f.displayScale) };
+        ms = measureScore();
+      }
+    }
     const scoreW = ms.sw;
     const outSt = ms.os;
     const outW = ms.ow;
@@ -450,8 +462,14 @@ const reviewScore: Recipe = {
       rowH = Math.max(5 * u, Math.min(x.pick({ portrait: 8.4 * u, default: 7.2 * u }), (room - padTop - padBot) / 5));
       yBars += Math.max(0, room - (rowH * 5 + padTop + padBot)) / 2;
     } else {
-      const blk = logoS + gT + tWr.h + 6 * u + scoreH + 3 * u + starS + 4 * u + countH + 8 * u + rowH * 5 + padTop + padBot;
-      yBrand = Math.max(16 * u, (H - blk) / 2 - 3 * u);
+      let blk = logoS + gT + tWr.h + 6 * u + scoreH + 3 * u + starS + 4 * u + countH + 8 * u + rowH * 5 + padTop + padBot;
+      const avail = H - 30 * u;
+      if (blk > avail) {
+        const r2 = Math.max(5.5 * u, rowH - (blk - avail) / 5);
+        blk -= (rowH - r2) * 5;
+        rowH = r2;
+      }
+      yBrand = Math.max(15 * u, (H - blk) / 2 - 3 * u);
       yTitle = yBrand + logoS + gT;
       yScore = yTitle + tWr.h + 6 * u;
       yStars = yScore + scoreH + 3 * u;

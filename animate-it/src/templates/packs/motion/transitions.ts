@@ -71,8 +71,8 @@ const shapeWipe: Recipe = {
       : { shape: 'circle' as const, x: cx, y: cy, r: k([tB, 0], [tB + d, R, e]) };
 
     const maxW = W - x.pick({ landscape: 30 * u, default: 16 * u });
-    const aFit = fitTitle(x, x.c.from, { maxW, maxLines: 2, max: x.pick({ landscape: 12 * u, story: 14 * u, default: 12 * u }), balance: true });
-    const bFit = fitTitle(x, x.c.title, { maxW, maxLines: 2, max: x.pick({ landscape: 13 * u, story: 15 * u, default: 13 * u }), balance: true });
+    const aFit = fitTitle(x, x.c.from, { maxW, maxLines: 2, max: x.pick({ landscape: 12 * u, story: 17 * u, default: 13 * u }), balance: true });
+    const bFit = fitTitle(x, x.c.title, { maxW, maxLines: 2, max: x.pick({ landscape: 14 * u, story: 19 * u, default: 15 * u }), balance: true });
     const eyeS = x.pick({ story: 3.8 * u, default: 3.2 * u });
     const eye = fitBody(x, x.c.eyebrow, { maxW, max: eyeS, weight: 700, tracking: 0.24, upper: true, maxLines: 1 });
 

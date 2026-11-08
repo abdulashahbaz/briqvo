@@ -332,3 +332,32 @@ export const lighter = (a: string, b: string) => (luminance(a) > luminance(b) ? 
 
 /** Deterministic shuffle-free random helper in [a, b). */
 export const rr = (r: () => number, a: number, b: number) => a + r() * (b - a);
+
+/** Split copy into sentences at . ! ? … (keeps the punctuation). */
+export function sentences(text: string): string[] {
+  const out: string[] = [];
+  let cur: string[] = [];
+  for (const w of text.split(/\s+/).filter(Boolean)) {
+    cur.push(w);
+    if (/[.!?…]$/.test(w)) {
+      out.push(cur.join(' '));
+      cur = [];
+    }
+  }
+  if (cur.length) out.push(cur.join(' '));
+  return out;
+}
+
+/**
+ * fitTitle that prefers one sentence per line ("Fewer meetings. / More making.") when that keeps the type
+ * at ≥ 60% of the max size; otherwise a normal (balanced) fit. Use the returned `text` for the layer.
+ */
+export function fitTitleSentences(x: Ctx, text: string, o: Parameters<typeof fitTitle>[2]): Fit & { text: string } {
+  const sents = text.includes('\n') ? [] : sentences(text);
+  if (sents.length > 1) {
+    const t2 = sents.join('\n');
+    const keep = fitTitle(x, t2, { ...o, maxLines: Math.min(o.maxLines ?? 99, sents.length), min: o.max * 0.6, balance: false });
+    if (keep.lines.length <= sents.length && keep.w <= o.maxW && (o.maxH === undefined || keep.h <= o.maxH)) return { ...keep, text: t2 };
+  }
+  return { ...fitTitle(x, text, o), text };
+}

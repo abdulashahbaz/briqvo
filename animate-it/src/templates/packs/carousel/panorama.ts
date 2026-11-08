@@ -1,6 +1,6 @@
 import type { Layer } from '../../../engine/types';
 import { type Recipe, rect, circle, group, image, path, k, tween, fadeIn, ta } from '../../kit';
-import { chip, chipW, fadeUp, icon, pad2, seamLine, shadowCol, slideX, swipeCue, bandD } from './shared';
+import { chip, chipW, fadeUp, icon, pad2, seamLine, shadowCol, slideX, swipeCue, bandD, tsz } from './shared';
 
 /** Seamless panorama: one wide image across every slide, revealed slide by slide through expanding windows. */
 export const horizonPanorama: Recipe = {
@@ -162,7 +162,7 @@ export const horizonPanorama: Recipe = {
           anim: ta.slide(0.55, { stagger: 0.05 }),
         }),
         x.title('cv-title', x.c.title, {
-          size: 10.4 * u,
+          size: tsz(x, 10.4 * u),
           x: X + m,
           y: 80.5 * u,
           w: S - 2 * m,
@@ -245,7 +245,7 @@ export const horizonPanorama: Recipe = {
           anim: ta.slide(0.6, { stagger: 0.04 }),
         }),
         x.title(`ft-h-${i}`, h, {
-          size: 7.8 * u,
+          size: tsz(x, 7.8 * u),
           x: X + m,
           y: 97 * u,
           w: S - 2 * m,
@@ -287,7 +287,7 @@ export const horizonPanorama: Recipe = {
           opacity: fadeIn(0.8, 0.4),
         }),
         x.title('ct-title', x.c.cta, {
-          size: 8.6 * u,
+          size: tsz(x, 8.6 * u),
           x: X + m,
           y: 95 * u,
           w: S - 2 * m,

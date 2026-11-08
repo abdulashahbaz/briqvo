@@ -192,14 +192,17 @@ export const drift = (a: number, b: number, t0: number, t1: number) => k<number>
 export function seq(v0: number, ...rest: [number, number, Ease?][]) {
   return k<number>([0, v0], ...rest);
 }
-/** Sine-ish bob for loops: oscillates around `base` by `amp` with `cycles` over `dur`. */
+/**
+ * Smooth sine oscillation for loops: base ± amp, `cycles` full periods over `dur`.
+ * Densely sampled with linear segments so velocity never stalls between keyframes.
+ */
 export function bob(base: number, amp: number, dur: number, cycles = 1, phase = 0) {
-  const steps = Math.max(4, Math.round(cycles * 4));
+  const steps = Math.max(12, Math.round(cycles * 24));
   const frames: [number, number, Ease?][] = [];
   for (let i = 0; i <= steps; i++) {
     const t = (i / steps) * dur;
     const v = base + amp * Math.sin(phase + (i / steps) * cycles * Math.PI * 2);
-    frames.push([t, v, 'inOutSine']);
+    frames.push([t, v, 'linear']);
   }
   return k<number>(...frames);
 }

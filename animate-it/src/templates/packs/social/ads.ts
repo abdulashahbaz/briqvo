@@ -1,7 +1,7 @@
 /** Ads & sales: flash sale, product spotlight, promo code, app install. */
 import type { Layer } from '../../../engine/types';
 import { type Recipe, k, rect, circle, group, path, image, phone, radial, linear, ta, alpha, shade, readableOn, ICONS } from '../../kit';
-import { type TS, txt, wrap, fit, tw, chip, flow, stars, glow, brandRow, icon, ICON, CURSOR, to, pulse, splitNum, vivid } from './util';
+import { type TS, txt, wrap, fit, tw, chip, flow, stars, glow, brandRow, icon, ICON, CURSOR, to, pulse, splitNum, vivid, balance } from './util';
 
 // ------------------------------------------------------------------ Flash Sale
 
@@ -59,7 +59,8 @@ const flashSale: Recipe = {
     const segW = tw(x, seg, mSt);
     const bandW = Math.hypot(W, H) * 1.05;
     const reps = Math.max(2, Math.ceil((bandW + segW * 3) / Math.max(1, segW)) + 1);
-    const bandsY = x.pick({ story: [21 * u, H - 22 * u], portrait: [10 * u, H - 10 * u], default: [8 * u, H - 8 * u] });
+    const bandsY = x.pick({ story: [21 * u, H - 22 * u], portrait: [10 * u, H - 10 * u], landscape: [6.5 * u, H - 6.5 * u], default: [8 * u, H - 8 * u] });
+    const tilt = x.isLandscape ? 0.6 : 1;
     const band = (id: string, y: number, rot: number, dir: number, t0: number, fill: string, color: string) =>
       group(
         id,
@@ -89,7 +90,7 @@ const flashSale: Recipe = {
     const numText = `${x.c.percent}%`;
     const pct = splitNum(x.c.percent);
     const maxNumW = W - m * 2;
-    let nSt: TS = { role: 'title', size: x.pick({ story: 44 * u, portrait: 34 * u, landscape: 34 * u, default: 28 * u }), lh: 0.95 };
+    let nSt: TS = { role: 'title', size: x.pick({ story: 44 * u, portrait: 34 * u, landscape: 31 * u, default: 28 * u }), lh: 0.95 };
     let oSt: TS = { role: 'title', size: nSt.size * (tall ? 0.5 : 0.42), uppercase: true, lh: 0.95, tracking: 0.04 };
     const fitNum = () => {
       const nw = tw(x, numText, nSt);
@@ -185,8 +186,8 @@ const flashSale: Recipe = {
       background: radial(0.5, 0.5, 0.9, shade(p.bg, 0.08), p.bg),
       layers: [
         glow('glow', { x: W / 2, y: yNum + numBlockH / 2, r: 55 * u, color: p.accent, a: 0.28, scale: pulse(0.8, 5.5, 1.6, 1, 1.08) }),
-        band('band-a', bandsY[0], -5, 1, 0.05, p.accent, p.onAccent),
-        band('band-b', bandsY[1], 4, -1, 0.2, p.fg, p.bg),
+        band('band-a', bandsY[0], -5 * tilt, 1, 0.05, p.accent, p.onAccent),
+        band('band-b', bandsY[1], 4 * tilt, -1, 0.2, p.fg, p.bg),
         txt(x, 'kicker', x.c.kicker, kSt, { x: W / 2, y: yKick, ay: 0, fill: p.fg, anim: ta.center(0.35, { stagger: 0.03 }) }),
         txt(x, 'num', numText, nSt, {
           x: numRight,
@@ -335,12 +336,17 @@ const productSpotlight: Recipe = {
     const logoS = x.pick({ story: 6 * u, default: 5 * u });
     const bSt: TS = { role: 'body', size: x.pick({ story: 3.8 * u, default: 3.3 * u }), weight: 700 };
     const nSt = fit(x, x.c.name, { role: 'title', size: x.pick({ landscape: 11 * u, story: 12 * u, portrait: 10 * u, square: 8 * u, default: 10 * u }), lh: 1 }, colW, 2);
-    const nWr = wrap(x, x.c.name, nSt, colW);
+    const nBW = balance(x, x.c.name, nSt, colW);
+    const nWr = wrap(x, x.c.name, nSt, nBW);
     const dSt = fit(x, x.c.desc, { role: 'body', size: x.pick({ landscape: 3.6 * u, story: 4.4 * u, portrait: 3.7 * u, square: 3.3 * u, default: 3.6 * u }) }, colW, 3);
-    const dWr = wrap(x, x.c.desc, dSt, colW);
-    const fSt: TS = { role: 'body', size: x.pick({ story: 3.6 * u, landscape: 3.2 * u, default: 3 * u }), weight: 600 };
-    const fH = fSt.size * 2.4;
+    const dBW = balance(x, x.c.desc, dSt, colW);
+    const dWr = wrap(x, x.c.desc, dSt, dBW);
+    let fSt: TS = { role: 'body', size: x.pick({ story: 3.6 * u, landscape: 3.2 * u, default: 3 * u }), weight: 600 };
     const feats = [x.c.f1, x.c.f2, x.c.f3].filter((f) => f.trim());
+    // Each feature chip must fit the text column on its own.
+    const widest = feats.reduce((a, f) => (tw(x, f, fSt) > tw(x, a, fSt) ? f : a), '');
+    fSt = fit(x, widest, fSt, colW - fSt.size * 1.8 - fSt.size * 2.4 * 0.9, 1, 0.7);
+    const fH = fSt.size * 2.4;
     const featW = feats.map((f) => tw(x, f, fSt) + fSt.size * 1.3 + fSt.size * 0.5 + fH * 0.9);
     const fGap = 1.6 * u;
     const fl = split ? { rows: feats.map((_, i) => [i]), rowW: featW } : flow(featW, colW, fGap);
@@ -483,8 +489,8 @@ const productSpotlight: Recipe = {
             scale: to(0, 1, 1.25, 0.35, 'outBack'),
           },
         ),
-        txt(x, 'name', x.c.name, nSt, { x: tx, y: yName, w: colW, ax: tax, ay: 0, align, anim: ta.rise(0.6, { stagger: 0.08 }) }),
-        txt(x, 'desc', x.c.desc, dSt, { x: tx, y: yD, w: colW, ax: tax, ay: 0, align, fill: p.muted, anim: ta.blur(1.0, { stagger: 0.04 }) }),
+        txt(x, 'name', x.c.name, nSt, { x: tx, y: yName, w: nBW, ax: tax, ay: 0, align, anim: ta.rise(0.6, { stagger: 0.08 }) }),
+        txt(x, 'desc', x.c.desc, dSt, { x: tx, y: yD, w: dBW, ax: tax, ay: 0, align, fill: p.muted, anim: ta.blur(1.0, { stagger: 0.04 }) }),
         ...featLayers,
         cta.layer,
       ],
@@ -544,9 +550,11 @@ const promoCode: Recipe = {
     const logoS = x.pick({ story: 6 * u, default: 5 * u });
     const bSt: TS = { role: 'body', size: x.pick({ story: 3.8 * u, default: 3.3 * u }), weight: 700 };
     const tSt = fit(x, x.c.title, { role: 'title', size: x.pick({ landscape: 12 * u, story: 14 * u, portrait: 13 * u, default: 11.5 * u }), lh: 1 }, W - m * 2, 2);
-    const tWr = wrap(x, x.c.title, tSt, W - m * 2);
+    const tBW = balance(x, x.c.title, tSt, W - m * 2);
+    const tWr = wrap(x, x.c.title, tSt, tBW);
     const sSt = fit(x, x.c.sub, { role: 'body', size: x.pick({ story: 4.6 * u, default: 3.8 * u }) }, W - m * 3, 2);
-    const sWr = wrap(x, x.c.sub, sSt, W - m * 3);
+    const sBW = balance(x, x.c.sub, sSt, W - m * 3);
+    const sWr = wrap(x, x.c.sub, sSt, sBW);
     const codeSt: TS = { role: 'title', size: x.pick({ story: 8.5 * u, default: 7 * u }), tracking: 0.12, uppercase: true };
     const codeW = tw(x, x.c.code, codeSt);
     const boxH = codeSt.size * x.f.displayScale * 2.1;
@@ -633,8 +641,8 @@ const promoCode: Recipe = {
             rotation: k([0.2, 0], [0.95, -6, 'outCubic'], [1.25, 4, 'inOutSine'], [1.6, 0, 'outBack']),
           },
         ),
-        txt(x, 'title', x.c.title, tSt, { x: cx, y: yTitle, w: W - m * 2, ay: 0, anim: ta.rise(0.6, { stagger: 0.08 }) }),
-        txt(x, 'sub', x.c.sub, sSt, { x: cx, y: ySub, w: W - m * 3, ay: 0, fill: p.muted, anim: ta.blur(1.0, { stagger: 0.04 }) }),
+        txt(x, 'title', x.c.title, tSt, { x: cx, y: yTitle, w: tBW, ay: 0, anim: ta.rise(0.6, { stagger: 0.08 }) }),
+        txt(x, 'sub', x.c.sub, sSt, { x: cx, y: ySub, w: sBW, ay: 0, fill: p.muted, anim: ta.blur(1.0, { stagger: 0.04 }) }),
         group(
           'box',
           [
@@ -788,7 +796,8 @@ const appInstall: Recipe = {
     const tx = story ? W / 2 : colX;
     const align = story ? 'center' : 'left';
     const hSt = fit(x, x.c.headline, { role: 'title', size: x.pick({ landscape: 10 * u, story: 11 * u, portrait: 7.6 * u, default: 7 * u }), lh: 1.02 }, colW, story ? 2 : 4);
-    const hWr = wrap(x, x.c.headline, hSt, colW);
+    const hBW = balance(x, x.c.headline, hSt, colW);
+    const hWr = wrap(x, x.c.headline, hSt, hBW);
     const tile = x.pick({ story: 15 * u, landscape: 15 * u, default: 13.5 * u });
     const nameSt: TS = { role: 'title', size: x.pick({ story: 5.4 * u, landscape: 5.2 * u, default: 4.6 * u }) };
     const starS = x.pick({ story: 3.8 * u, default: 3.2 * u });
@@ -967,7 +976,7 @@ const appInstall: Recipe = {
           fill: p.muted,
           opacity: to(0, 1, 1.4, 0.5),
         }),
-        txt(x, 'headline', x.c.headline, hSt, { x: tx, y: yHead, w: colW, ax: tax, ay: 0, align, anim: ta.rise(0.45, { stagger: 0.07 }) }),
+        txt(x, 'headline', x.c.headline, hSt, { x: tx, y: yHead, w: hBW, ax: tax, ay: 0, align, anim: ta.rise(0.45, { stagger: 0.07 }) }),
         rect('cta-ripple', {
           x: ctaCx,
           y: yCta + cH / 2,

@@ -1,7 +1,7 @@
 import type { Layer } from '../../../engine/types';
 import type { Ctx } from '../../kit';
 import { type Recipe, rect, circle, ellipse, group, phone, k, fadeIn, pop, ta, alpha, shade, linear } from '../../kit';
-import { ambient, chip, estW, fadeUp, icon, isDark, list, pad2, seamLine, shadowCol, slideX, star, swipeCue } from './shared';
+import { ambient, chip, estW, fadeUp, icon, isDark, list, pad2, seamLine, shadowCol, slideX, star, swipeCue, tsz } from './shared';
 
 type Screen = (sw: number, sh: number) => Layer[];
 
@@ -25,7 +25,7 @@ function homeScreen(x: Ctx, id: string): Screen {
       x.body(`${id}-hi`, x.c.greeting, { size: 2.9 * u, x: 3.6 * u, y: 11 * u, w: sw - 7 * u, ax: 0, ay: 0, align: 'left', weight: 700, fill: p.fg, lineHeight: 1.15 }),
       ellipse(`${id}-trk`, { x: sw / 2, y: 30 * u, w: 20 * u, h: 20 * u, stroke: alpha(p.fg, 0.08), strokeWidth: 2.2 * u }),
       ellipse(`${id}-arc`, { x: sw / 2, y: 30 * u, w: 20 * u, h: 20 * u, stroke: p.accent, strokeWidth: 2.2 * u, lineCap: 'round', arcEnd: k([0.6, 0], [1.8, frac, 'outCubic']) }),
-      x.title(`${id}-rt`, x.c.ringText, { size: 4.6 * u, x: sw / 2, y: 29 * u, lineHeight: 1 }),
+      x.title(`${id}-rt`, x.c.ringText, { size: tsz(x, 4.6 * u), x: sw / 2, y: 29 * u, lineHeight: 1 }),
       x.body(`${id}-rl`, x.c.ringLabel, { size: 1.6 * u, x: sw / 2, y: 33.2 * u, weight: 600, fill: p.muted, lineHeight: 1 }),
       ...rows.flatMap((r, j) => [
         rect(`${id}-row${j}`, { x: 2.6 * u, y: (44 + j * 7.4) * u, ax: 0, w: sw - 5.2 * u, h: 6 * u, radius: 1.6 * u, fill: p.bg }),
@@ -53,7 +53,7 @@ function listScreen(x: Ctx, id: string): Screen {
     const out: Layer[] = [
       rect(`${id}-bg`, { x: 0, y: 0, ax: 0, ay: 0, w: sw, h: sh, fill: p.surface }),
       ...statusBar(x, id, sw, p.fg),
-      x.title(`${id}-h`, x.c.rowsTitle, { size: 4.2 * u, x: 3.6 * u, y: 11.5 * u, ax: 0, align: 'left', lineHeight: 1 }),
+      x.title(`${id}-h`, x.c.rowsTitle, { size: tsz(x, 4.2 * u), x: 3.6 * u, y: 11.5 * u, ax: 0, align: 'left', lineHeight: 1 }),
       rect(`${id}-card`, { x: 2.6 * u, y: 17 * u, ax: 0, ay: 0, w: sw - 5.2 * u, h: 9.6 * u, radius: 2 * u, fill: p.accent }),
       x.body(`${id}-ct`, `${Math.min(3, rows.length)} of ${rows.length} done`, { size: 2.1 * u, x: 5 * u, y: 20 * u, ax: 0, align: 'left', weight: 700, fill: p.onAccent, lineHeight: 1 }),
       rect(`${id}-tr`, { x: 5 * u, y: 23.4 * u, ax: 0, w: sw - 10 * u, h: 1.1 * u, radius: 0.55 * u, fill: alpha(p.onAccent, 0.3) }),
@@ -90,9 +90,9 @@ function statsScreen(x: Ctx, id: string): Screen {
     const out: Layer[] = [
       rect(`${id}-bg`, { x: 0, y: 0, ax: 0, ay: 0, w: sw, h: sh, fill: p.surface }),
       ...statusBar(x, id, sw, p.fg),
-      x.title(`${id}-h`, x.c.statsTitle, { size: 4.2 * u, x: 3.6 * u, y: 11.5 * u, ax: 0, align: 'left', lineHeight: 1 }),
+      x.title(`${id}-h`, x.c.statsTitle, { size: tsz(x, 4.2 * u), x: 3.6 * u, y: 11.5 * u, ax: 0, align: 'left', lineHeight: 1 }),
       icon(`${id}-fl`, 'flame', { x: 6 * u, y: 20.5 * u, size: 4.6 * u, color: p.accent, sw: 2 }),
-      x.title(`${id}-big`, x.c.big, { size: 7.4 * u, x: 9.6 * u, y: 20.5 * u, ax: 0, align: 'left', lineHeight: 1, fill: p.fg }),
+      x.title(`${id}-big`, x.c.big, { size: tsz(x, 7.4 * u), x: 9.6 * u, y: 20.5 * u, ax: 0, align: 'left', lineHeight: 1, fill: p.fg }),
       x.body(`${id}-bl`, x.c.bigLabel, { size: 1.8 * u, x: 3.6 * u, y: 26 * u, ax: 0, align: 'left', weight: 600, fill: p.muted, lineHeight: 1 }),
       rect(`${id}-card`, { x: 2.6 * u, y: 30 * u, ax: 0, ay: 0, w: cw, h: 23 * u, radius: 2 * u, fill: p.bg }),
     ];
@@ -120,7 +120,7 @@ function notifyScreen(x: Ctx, id: string): Screen {
     const out: Layer[] = [
       rect(`${id}-bg`, { x: 0, y: 0, ax: 0, ay: 0, w: sw, h: sh, fill: linear(160, p.accent, shade(p.accent, -0.45)) }),
       ...statusBar(x, id, sw, p.onAccent),
-      x.title(`${id}-clock`, '9:41', { size: 10 * u, x: sw / 2, y: 15 * u, fill: p.onAccent, lineHeight: 1 }),
+      x.title(`${id}-clock`, '9:41', { size: tsz(x, 10 * u), x: sw / 2, y: 15 * u, fill: p.onAccent, lineHeight: 1 }),
       x.body(`${id}-date`, 'Tuesday, 4 March', { size: 1.9 * u, x: sw / 2, y: 21.5 * u, weight: 600, fill: alpha(p.onAccent, 0.8), lineHeight: 1 }),
     ];
     notes.forEach((n, j) => {
@@ -345,7 +345,7 @@ export const appTour: Recipe = {
         x.logo('cv-logo', { size: 4.6 * u, x: m + 3.6 * u, y: 12 * u, color: p.onAccent, scale: pop(0.12, 0.6, 'spring') }),
         x.body('cv-brand', x.c.brand, { size: 3.6 * u, x: m + 9.4 * u, y: 12 * u, ax: 0, align: 'left', weight: 700, fill: p.fg, anim: ta.slide(0.2, { stagger: 0.04 }) }),
         swipeCue(x, 'cv-swipe', { x: S - m, y: 12 * u, bg: p.fg, fg: p.bg, t0: 1.1, dur }),
-        x.title('cv-title', x.c.title, { size: 9.4 * u, x: cx, y: 47 * u, w: S - 2 * m, ay: 1, lineHeight: 1.02, anim: ta.riseLines(0.25, { stagger: 0.12 }) }),
+        x.title('cv-title', x.c.title, { size: tsz(x, 9.4 * u), x: cx, y: 47 * u, w: S - 2 * m, ay: 1, lineHeight: 1.02, anim: ta.riseLines(0.25, { stagger: 0.12 }) }),
         mkPhone('cv-phone', cx, -4, homeScreen(x, 'cv-scr'), 0.35),
         floatChip('cv-chip', `${x.c.ringText} ${x.c.ringLabel}`, 'check', cx + 25 * u, 104 * u, 1.3),
       );
@@ -363,7 +363,7 @@ export const appTour: Recipe = {
       const cx = X + S / 2;
       L.push(
         x.body(`ft-k-${i}`, `Feature ${pad2(i)}`, { size: 2.7 * u, x: cx, y: 17 * u, weight: 700, fill: p.accent, uppercase: true, tracking: 0.16, anim: ta.chars(0.1, { stagger: 0.02 }) }),
-        x.title(`ft-h-${i}`, h, { size: 8.2 * u, x: cx, y: 38 * u, w: S - 2 * m, ay: 1, lineHeight: 1.03, anim: ta.rise(0.2, { stagger: 0.06 }) }),
+        x.title(`ft-h-${i}`, h, { size: tsz(x, 8.2 * u), x: cx, y: 38 * u, w: S - 2 * m, ay: 1, lineHeight: 1.03, anim: ta.rise(0.2, { stagger: 0.06 }) }),
         x.body(`ft-b-${i}`, b, { size: 3.8 * u, x: cx, y: 41.5 * u, w: S - 2 * m - 8 * u, ay: 0, lineHeight: 1.38, fill: p.muted, anim: fadeUp(0.5) }),
         mkPhone(`ft-phone-${i}`, cx, side * -3, scr, 0.25),
         floatChip(`ft-chip-${i}`, c, ic, cx + side * 25 * u, [96, 104, 66][n] * u, 1.2),
@@ -379,7 +379,7 @@ export const appTour: Recipe = {
       L.push(
         rect('ct-tile', { x: cx, y: 30 * u, w: 22 * u, h: 22 * u, radius: 6 * u, fill: p.accent, shadow: { color: shadowCol(p, 0.3), blur: 5 * u, y: 2 * u }, scale: pop(0.1, 0.8, 'spring'), rotation: k([0.1, -12], [1.0, 0, 'outBack']) }),
         x.logo('ct-logo', { size: 13 * u, x: cx, y: 30 * u, color: p.onAccent, scale: pop(0.2, 0.8, 'spring'), rotation: k([0.2, -12], [1.1, 0, 'outBack']) }),
-        x.title('ct-title', x.c.cta, { size: 8.4 * u, x: cx, y: 46 * u, w: S - 2 * m - 6 * u, ay: 0, lineHeight: 1.04, anim: ta.rise(0.45, { stagger: 0.06 }) }),
+        x.title('ct-title', x.c.cta, { size: tsz(x, 8.4 * u), x: cx, y: 46 * u, w: S - 2 * m - 6 * u, ay: 0, lineHeight: 1.04, anim: ta.rise(0.45, { stagger: 0.06 }) }),
         ...Array.from({ length: 5 }, (_, j) => star(`ct-star-${j}`, { x: rx0 + 1.7 * u + j * 4.2 * u, y: 69 * u, size: 3.4 * u, color: p.accent, scale: pop(0.8 + j * 0.06, 0.4) })),
         x.body('ct-rating', x.c.rating, { size: 3.2 * u, x: rx0 + 23 * u, y: 69 * u, ax: 0, align: 'left', weight: 600, fill: p.muted, opacity: fadeIn(1.1, 0.4) }),
         chip(x, 'ct-btn', x.c.ctaBtn, {

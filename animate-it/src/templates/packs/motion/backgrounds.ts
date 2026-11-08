@@ -2,18 +2,28 @@
 import type { Keyframe, Layer } from '../../../engine/types';
 import { luminance } from '../../../engine/color';
 import { type Recipe, k, rect, circle, ellipse, group, path, radial, alpha, shade, lerpColor, starPath } from '../../kit';
-import { osc, oscMap, loopOsc, smoothPath, rr } from './shared';
+import { osc, oscMap, loopOsc, smoothPath, rr, fitBody } from './shared';
 
-/** Optional tiny caption used by every background. */
-function caption(x: Parameters<Recipe['build']>[0], fill: string): Layer {
-  return x.body('brand', x.c.brand, {
-    size: 2.3 * x.u,
-    weight: 600,
-    uppercase: true,
-    tracking: 0.32,
-    y: x.H - x.pick({ landscape: 6 * x.u, default: 7 * x.u }),
-    fill,
-  });
+/** Optional tiny caption used by every background, on a soft pill so it reads over any pattern. */
+function caption(x: Parameters<Recipe['build']>[0], fill: string): Layer[] {
+  const text = x.c.brand.trim();
+  if (!text) return [];
+  const f = fitBody(x, text, { maxW: x.W - 24 * x.u, max: 2.3 * x.u, weight: 600, tracking: 0.32, upper: true, maxLines: 1 });
+  const y = x.H - x.pick({ landscape: 6.5 * x.u, default: 7.5 * x.u });
+  const ph = f.px * 2.6;
+  return [
+    rect('brand-pill', {
+      x: x.cx,
+      y,
+      w: f.w + f.px * 3.2,
+      h: ph,
+      radius: ph / 2,
+      fill: alpha(x.p.bg, 0.72),
+      stroke: alpha(x.p.fg, 0.12),
+      strokeWidth: Math.max(1, 0.12 * x.u),
+    }),
+    x.body('brand', text, { size: f.size, weight: 600, uppercase: true, tracking: 0.32, y, fill }),
+  ];
 }
 
 const BRAND_FIELD = { key: 'brand', label: 'Caption (optional)', default: '' };
@@ -29,8 +39,8 @@ const meshLoop: Recipe = {
   duration: 8,
   fields: [BRAND_FIELD],
   variants: [
-    { name: 'Midnight', palette: 'midnight', fonts: 'sora', format: 'story' },
-    { name: 'Lilac', palette: 'lilac', fonts: 'outfit', format: 'square' },
+    { name: 'Midnight', palette: 'midnight', fonts: 'sora', format: 'story', copy: { brand: 'Deep focus' } },
+    { name: 'Lilac', palette: 'lilac', fonts: 'outfit', format: 'square', copy: { brand: 'Soft launch' } },
     { name: 'Cyber', palette: 'cyber', fonts: 'unbounded', format: 'landscape', copy: { brand: 'Signal / Noise' } },
     { name: 'Peach', palette: 'peach', fonts: 'fraunces', format: 'portrait', copy: { brand: 'Golden hour' } },
   ],
@@ -62,7 +72,7 @@ const meshLoop: Recipe = {
         { x: b.fx * W, y: b.fy * H, w: 1, h: 1, ax: 0, ay: 0, rotation: k([0, b.ph], [dur, b.ph + 360 * b.dir, 'linear']) },
       ),
     );
-    layers.push(caption(x, alpha(p.fg, 0.75)));
+    layers.push(...caption(x, alpha(p.fg, 0.8)));
     return { background: p.bg, layers };
   },
 };
@@ -78,10 +88,10 @@ const pulseGrid: Recipe = {
   duration: 6,
   fields: [BRAND_FIELD],
   variants: [
-    { name: 'Noir', palette: 'noir', fonts: 'space', format: 'square', seed: 1 },
-    { name: 'Azure', palette: 'azure', fonts: 'grotesk', format: 'landscape', seed: 2 },
+    { name: 'Noir', palette: 'noir', fonts: 'space', format: 'square', seed: 1, copy: { brand: 'Night mode' } },
+    { name: 'Azure', palette: 'azure', fonts: 'grotesk', format: 'landscape', seed: 2, copy: { brand: 'Ready when you are' } },
     { name: 'Royal', palette: 'royal', fonts: 'outfit', format: 'story', seed: 3, copy: { brand: 'Members evening' } },
-    { name: 'Mint', palette: 'mint', fonts: 'manrope', format: 'portrait', seed: 4 },
+    { name: 'Mint', palette: 'mint', fonts: 'manrope', format: 'portrait', seed: 4, copy: { brand: 'Fresh start' } },
   ],
   build(x) {
     const { u, W, H, p, cx, cy } = x;
@@ -131,7 +141,7 @@ const pulseGrid: Recipe = {
         layers.push(L);
       }
     }
-    layers.push(caption(x, alpha(p.fg, 0.8)));
+    layers.push(...caption(x, alpha(p.fg, 0.8)));
     return { background: p.bg, layers };
   },
 };
@@ -147,10 +157,10 @@ const flowLines: Recipe = {
   duration: 8,
   fields: [BRAND_FIELD],
   variants: [
-    { name: 'Ocean', palette: 'ocean', fonts: 'sora', format: 'landscape' },
+    { name: 'Ocean', palette: 'ocean', fonts: 'sora', format: 'landscape', copy: { brand: 'Tidal' } },
     { name: 'Cyber', palette: 'cyber', fonts: 'unbounded', format: 'story', copy: { brand: 'Night shift' } },
-    { name: 'Arctic', palette: 'arctic', fonts: 'manrope', format: 'square' },
-    { name: 'Blush', palette: 'blush', fonts: 'dmserif', format: 'portrait' },
+    { name: 'Arctic', palette: 'arctic', fonts: 'manrope', format: 'square', copy: { brand: 'Clear skies' } },
+    { name: 'Blush', palette: 'blush', fonts: 'dmserif', format: 'portrait', copy: { brand: 'Slow mornings' } },
   ],
   build(x) {
     const { u, W, H, p, cy } = x;
@@ -163,7 +173,9 @@ const flowLines: Recipe = {
     const rot = x.pick({ landscape: -6, story: -30, portrait: -20, default: -14 });
     const ext = H * Math.abs(Math.sin((rot * Math.PI) / 180)) + 10 * u;
     const pathW = W + lam * 2.05 + ext * 2;
-    const steps = Math.ceil(pathW / (lam / 20));
+    // Sample on an exact divisor of the wavelength so the spline itself repeats every λ.
+    const stepX = lam / 24;
+    const steps = Math.ceil(pathW / stepX);
     const xTrack = k([-dur, -ext], [2 * dur, -3 * lam - ext, 'linear']);
     const ribbon: Layer[] = [];
     const layers: Layer[] = [
@@ -176,7 +188,7 @@ const flowLines: Recipe = {
         scale: loopOsc(1, 0.05, dur, 1, 0),
       }),
     ];
-    const lines: { d: string; dt: number; y: Keyframe<number>[] }[] = [];
+    const lines: { d: string; dt: number; y: Keyframe<number>[]; lenRatio: number }[] = [];
     for (let i = 0; i < N; i++) {
       const t = i / (N - 1);
       const base = cy + (t - 0.5) * gap * (N - 1);
@@ -184,15 +196,33 @@ const flowLines: Recipe = {
       const ph = t * 1.5;
       const pts: [number, number][] = [];
       for (let s = 0; s <= steps; s++) {
-        const xx = (s / steps) * pathW;
+        const xx = s * stepX;
         const k1 = (2 * Math.PI * xx) / lam;
         // Fundamental + second harmonic: both repeat every wavelength, so translating by λ is seamless.
         pts.push([xx, base + amp * Math.sin(k1 + ph) + A * 0.22 * Math.sin(2 * k1 - t * 2.2)]);
       }
       const d = smoothPath(pts);
+      // Arc length of one wavelength vs the whole path (dense sampling of the analytic curve).
+      const yAt = (xx: number) => {
+        const k1 = (2 * Math.PI * xx) / lam;
+        return amp * Math.sin(k1 + ph) + A * 0.22 * Math.sin(2 * k1 - t * 2.2);
+      };
+      const arc = (x0: number, x1: number) => {
+        const n = Math.max(8, Math.ceil(((x1 - x0) / lam) * 400));
+        let L = 0;
+        let py = yAt(x0);
+        for (let j = 1; j <= n; j++) {
+          const xx = x0 + ((x1 - x0) * j) / n;
+          const yy = yAt(xx);
+          L += Math.hypot((x1 - x0) / n, yy - py);
+          py = yy;
+        }
+        return L;
+      };
+      const lenRatio = arc(0, lam) / arc(0, steps * stepX);
       const y = osc(0, 1.6 * u, dur, { t0: -dur, t1: 2 * dur, q: 0 });
       const dt = t * dur * 0.5;
-      lines.push({ d, dt, y });
+      lines.push({ d, dt, y, lenRatio });
       ribbon.push(
         path(`line-${i}`, d, pathW, H, {
           x: xTrack,
@@ -207,11 +237,15 @@ const flowLines: Recipe = {
         }),
       );
     }
-    // Light pulses travelling along a few lines.
-    const T = dur / 2;
+    // Light pulses travelling along a few lines. The line slides one wavelength per loop, so each pulse's
+    // cycle is shortened by δ: after two cycles plus δ it has advanced exactly one wavelength of arc length,
+    // landing on the same screen spot at the loop point.
     const w = 0.06;
     [3, Math.floor(N / 2), N - 4].forEach((li, j) => {
       const L = lines[li];
+      const df = L.lenRatio;
+      const delta = (df * dur) / (2 * (1 + w) + df);
+      const T = (dur - delta) / 2;
       const off = j * 1.3;
       const ts: Keyframe<number>[] = [];
       const te: Keyframe<number>[] = [];
@@ -236,7 +270,7 @@ const flowLines: Recipe = {
         }),
       );
     });
-    layers.push(group('ribbon', ribbon, { x: x.cx, y: cy, w: W, h: H, rotation: rot }), caption(x, alpha(p.fg, 0.8)));
+    layers.push(group('ribbon', ribbon, { x: x.cx, y: cy, w: W, h: H, rotation: rot }), ...caption(x, alpha(p.fg, 0.8)));
     return { background: radial(0.5, 0.5, 0.8, p.bg2, p.bg), layers };
   },
 };
@@ -252,9 +286,9 @@ const driftParticles: Recipe = {
   duration: 8,
   fields: [BRAND_FIELD],
   variants: [
-    { name: 'Midnight', palette: 'midnight', fonts: 'grotesk', format: 'story' },
+    { name: 'Midnight', palette: 'midnight', fonts: 'grotesk', format: 'story', copy: { brand: 'Stay curious' } },
     { name: 'Royal', palette: 'royal', fonts: 'editorial', format: 'landscape', copy: { brand: 'An evening of firsts' } },
-    { name: 'Peach', palette: 'peach', fonts: 'poppins', format: 'square' },
+    { name: 'Peach', palette: 'peach', fonts: 'poppins', format: 'square', copy: { brand: 'Warm light' } },
     { name: 'Forest', palette: 'forest', fonts: 'fraunces', format: 'portrait', copy: { brand: 'Summer nights' } },
   ],
   build(x) {
@@ -325,7 +359,7 @@ const driftParticles: Recipe = {
         }
       }
     });
-    layers.push(caption(x, alpha(p.fg, 0.8)));
+    layers.push(...caption(x, alpha(p.fg, 0.8)));
     return { background: radial(0.5, 0.42, 0.9, p.bg2, p.bg), layers };
   },
 };

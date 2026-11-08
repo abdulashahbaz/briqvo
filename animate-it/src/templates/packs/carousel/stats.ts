@@ -1,6 +1,6 @@
 import type { Layer } from '../../../engine/types';
 import { type Recipe, rect, circle, ellipse, group, path, k, fadeIn, pop, ta, alpha, linear } from '../../kit';
-import { chip, fadeUp, icon, list, pad2, parseStat, seamLine, slideX, statTitle, swipeCue } from './shared';
+import { chip, fadeUp, icon, list, pad2, parseStat, seamLine, slideX, statTitle, swipeCue, tsz } from './shared';
 
 /** Data story: ring, bars and stat tiles, all sitting on one growth line that runs under every slide. */
 export const numbersStory: Recipe = {
@@ -172,7 +172,7 @@ export const numbersStory: Recipe = {
         opacity: fadeIn(0.1, 0.3),
       }),
       x.title('cv-title', x.c.title, {
-        size: 12.5 * u,
+        size: tsz(x, 12.5 * u),
         x: m,
         y: 29 * u,
         w: S - 2 * m,
@@ -210,8 +210,8 @@ export const numbersStory: Recipe = {
           arcEnd: k([0.25, 0], [1.8, frac, 'outCubic']),
         }),
         circle('rg-inner', R - 5 * u, { x: cx, y: cy, fill: alpha(p.accent, 0.08), scale: pop(0.2, 0.8, 'outBack') }),
-        statTitle(x, 'rg-num', x.c.ring, { size: 14 * u, x: cx, y: cy, lineHeight: 1, start: 0.25, dur: 1.55 }),
-        x.title('rg-lab', x.c.ringLabel, { size: 6.4 * u, x: cx, y: 81 * u, w: S - 2 * m - 6 * u, ay: 0, lineHeight: 1.06, anim: ta.rise(0.6, { stagger: 0.05 }) }),
+        statTitle(x, 'rg-num', x.c.ring, { size: tsz(x, 14 * u), x: cx, y: cy, lineHeight: 1, start: 0.25, dur: 1.55 }),
+        x.title('rg-lab', x.c.ringLabel, { size: tsz(x, 6.4 * u), x: cx, y: 81 * u, w: S - 2 * m - 6 * u, ay: 0, lineHeight: 1.06, anim: ta.rise(0.6, { stagger: 0.05 }) }),
       );
     }
 
@@ -230,7 +230,7 @@ export const numbersStory: Recipe = {
       const dec = Math.max(0, ...list(x.c.bars).map((v) => (v.includes('.') ? v.split('.')[1].replace(/\D/g, '').length : 0)));
       L.push(
         label('br-l', i, 'Finding 02'),
-        x.title('br-title', x.c.barsTitle, { size: 7 * u, x: X + m, y: 25 * u, w: S - 2 * m, ax: 0, ay: 0, align: 'left', lineHeight: 1.04, anim: ta.rise(0.2, { stagger: 0.05 }) }),
+        x.title('br-title', x.c.barsTitle, { size: tsz(x, 7 * u), x: X + m, y: 25 * u, w: S - 2 * m, ax: 0, ay: 0, align: 'left', lineHeight: 1.04, anim: ta.rise(0.2, { stagger: 0.05 }) }),
         rect('br-base', { x: X + m, y: base, ax: 0, w: k([0.2, 0.01], [1.0, S - 2 * m, 'outExpo']), h: 0.25 * u, fill: alpha(p.fg, 0.25) }),
       );
       vals.forEach((v, j) => {
@@ -282,7 +282,7 @@ export const numbersStory: Recipe = {
               rect(`tl-${j}-bg`, { x: 0, y: 0, ax: 0, ay: 0, w: tw, h: th, radius: 3 * u, fill: p.surface, stroke: alpha(p.fg, 0.08), strokeWidth: 0.2 * u }),
               circle(`tl-${j}-ic-bg`, 3.4 * u, { x: 7.4 * u, y: 8 * u, fill: alpha(p.accent, 0.16), scale: pop(t + 0.3, 0.5) }),
               icon(`tl-${j}-ic`, ic, { x: 7.4 * u, y: 8 * u, size: 3.8 * u, color: p.accent, sw: 2.4, scale: pop(t + 0.35, 0.5) }),
-              statTitle(x, `tl-${j}-v`, v, { size: 11 * u, x: 4 * u, y: 21.5 * u, ax: 0, align: 'left', lineHeight: 1, start: t + 0.2, dur: 1.3 }),
+              statTitle(x, `tl-${j}-v`, v, { size: tsz(x, 11 * u), x: 4 * u, y: 21.5 * u, ax: 0, align: 'left', lineHeight: 1, start: t + 0.2, dur: 1.3 }),
               x.body(`tl-${j}-l`, l, { size: 3.4 * u, x: 4 * u, y: 29 * u, w: tw - 8 * u, ax: 0, ay: 0, align: 'left', lineHeight: 1.32, fill: p.muted, anim: fadeUp(t + 0.45, { stagger: 0.02 }) }),
             ],
             { x: X + m + j * (tw + 4 * u), y: k([t, 32 * u], [t + 0.9, 24 * u, 'outExpo']), w: tw, h: th, ax: 0, ay: 0, opacity: fadeIn(t, 0.4) },
@@ -290,7 +290,7 @@ export const numbersStory: Recipe = {
         );
       });
       L.push(
-        x.title('tl-insight', x.c.insight, { size: 6.2 * u, x: X + m, y: 75 * u, w: S - 2 * m, ax: 0, ay: 0, align: 'left', lineHeight: 1.08, anim: ta.rise(0.7, { stagger: 0.04 }) }),
+        x.title('tl-insight', x.c.insight, { size: tsz(x, 6.2 * u), x: X + m, y: 75 * u, w: S - 2 * m, ax: 0, ay: 0, align: 'left', lineHeight: 1.08, anim: ta.rise(0.7, { stagger: 0.04 }) }),
       );
     }
 
@@ -302,7 +302,7 @@ export const numbersStory: Recipe = {
       L.push(
         circle('ct-badge', 7 * u, { x: X + m + 7 * u, y: 27 * u, fill: p.accent, scale: pop(0.15, 0.7, 'spring') }),
         icon('ct-ic', 'layers', { x: X + m + 7 * u, y: 27 * u, size: 7 * u, color: p.onAccent, sw: 2, trimEnd: k([0.4, 0], [1.1, 1, 'inOutCubic']) }),
-        x.title('ct-title', x.c.cta, { size: 9 * u, x: X + m, y: 38 * u, w: S - 2 * m, ax: 0, ay: 0, align: 'left', lineHeight: 1.03, anim: ta.rise(0.35, { stagger: 0.06 }) }),
+        x.title('ct-title', x.c.cta, { size: tsz(x, 9 * u), x: X + m, y: 38 * u, w: S - 2 * m, ax: 0, ay: 0, align: 'left', lineHeight: 1.03, anim: ta.rise(0.35, { stagger: 0.06 }) }),
         x.body('ct-sub', x.c.ctaSub, { size: 4 * u, x: X + m, y: 61 * u, w: S - 2 * m, ax: 0, ay: 0, align: 'left', lineHeight: 1.4, fill: p.muted, anim: fadeUp(0.7) }),
         chip(x, 'ct-follow', `Follow ${x.c.handle}`, {
           x: X + m,

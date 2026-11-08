@@ -4,6 +4,7 @@ import { type Recipe, k, rect, circle, group, path, linear, radial, ta, tween, f
 import {
   type FontRef,
   fitTitle,
+  fitTitleSentences,
   fitBody,
   displayFont,
   bodyFont,
@@ -114,13 +115,17 @@ const wordByWord: Recipe = {
     const per = x.isLandscape && sentences.length >= 3 ? 2 : 1;
     const stackLines: string[] = [];
     for (let i = 0; i < sentences.length; i += per) stackLines.push(sentences.slice(i, i + per).join(' '));
-    const fit = fitTitle(x, sentences.length > 1 ? stackLines.join('\n') : words.join(' '), {
+    const stackOpts = {
       maxW: W - 2 * m - 2 * u,
       maxH: bot0 - top0,
       max: x.pick({ landscape: 17 * u, story: 22 * u, default: 17 * u }),
       lineHeight: lh,
       balance: sentences.length <= 1,
-    });
+    };
+    const stackText = sentences.length > 1 ? stackLines.join('\n') : words.join(' ');
+    // Prefer keeping every sentence on one line, as long as the type stays reasonably big.
+    const keep = fitTitle(x, stackText, { ...stackOpts, maxLines: stackLines.length, min: stackOpts.max * 0.6 });
+    const fit = sentences.length > 1 && keep.lines.length <= stackLines.length && keep.w <= stackOpts.maxW ? keep : fitTitle(x, stackText, stackOpts);
     const tr = x.f.displayTracking;
     const sp = spaceWidth(f, fit.px, tr);
     const lineH = fit.px * lh;
@@ -359,7 +364,7 @@ const terminalType: Recipe = {
       palette: 'arctic',
       fonts: 'manrope',
       format: 'square',
-      copy: { headline: 'Hello, world.', prompt: '~', command: 'create studio --fast', out1: 'Workspace ready', out2: 'Invites sent to 4 people' },
+      copy: { headline: 'Hello, world.', prompt: '~', command: 'npx create-studio', out1: 'Workspace ready', out2: 'Invites sent to 4 people' },
     },
     {
       name: 'Forest',
@@ -589,7 +594,7 @@ const numberWindow: Recipe = {
     const cwMax = x.pick({ landscape: 104 * u, story: 86 * u, portrait: 82 * u, square: 74 * u, default: 78 * u });
     const chMax = x.pick({ landscape: 46 * u, story: 64 * u, portrait: 52 * u, square: 40 * u, default: 46 * u });
     const crop = 0.78;
-    const padK = 0.08;
+    const padK = 0.12;
     const px = Math.min(cwMax / (wEm + padK * 2), chMax / (vm.cap * crop), 90 * u);
     const cw = (wEm + padK * 2) * px;
     const ch = vm.cap * px * crop;
@@ -704,11 +709,11 @@ const splitTone: Recipe = {
     const { u, W, H, p, cx, cy } = x;
     const m = x.pick({ landscape: 12 * u, default: 8 * u });
     const lh = 1.0;
-    const fit = fitTitle(x, x.c.headline, {
+    const fit = fitTitleSentences(x, x.c.headline, {
       maxW: W - 2 * m,
       maxLines: x.pick({ landscape: 3, story: 5, default: 4 }),
       maxH: x.pick({ landscape: H * 0.52, story: H * 0.5, default: H * 0.56 }),
-      max: x.pick({ landscape: 15 * u, story: 16 * u, default: 13 * u }),
+      max: x.pick({ landscape: 15 * u, story: 17 * u, default: 15 * u }),
       lineHeight: lh,
       balance: true,
     });
@@ -726,7 +731,7 @@ const splitTone: Recipe = {
         fill: c.eye,
         anim: ta.chars(0.15, { stagger: 0.03 }),
       }),
-      x.title(`${id}-headline`, x.c.headline, {
+      x.title(`${id}-headline`, fit.text, {
         size: fit.size,
         y: cy,
         w: fit.wrapW,
