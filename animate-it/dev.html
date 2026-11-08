@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Animate It · contact sheet</title>
+    <style>
+      body { margin: 0; background: #e9edf5; font: 13px/1.4 Inter, system-ui, sans-serif; color: #0a1633; }
+      .row { display: flex; gap: 10px; align-items: flex-start; padding: 10px 14px; border-bottom: 1px solid #d5dbe8; }
+      .meta { width: 170px; flex: none; }
+      .meta b { display: block; font-size: 13px; }
+      .meta span { color: #5b6b8c; font-size: 11px; }
+      canvas { background: #fff; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,.15); }
+      .err { color: #c00; white-space: pre-wrap; font-size: 11px; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/dev/sheet.ts"></script>
+  </body>
+</html>
