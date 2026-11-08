@@ -93,7 +93,20 @@ export function Stage({ scene }: { scene: Scene }) {
     <div ref={wrapRef} className="ed-stage">
       {s > 0 && (
         <div className="ed-canvas" style={{ width: cw, height: ch }}>
-          <canvas ref={canvasRef} style={{ width: cw, height: ch }} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp} />
+          <canvas
+            ref={canvasRef}
+            style={{ width: cw, height: ch }}
+            onPointerDown={onDown}
+            onPointerMove={onMove}
+            onPointerUp={onUp}
+            onPointerCancel={onUp}
+            onDoubleClick={() => {
+              // Double-click a text layer to jump straight to editing its words.
+              const ta = document.querySelector<HTMLTextAreaElement>('.ed-right textarea');
+              ta?.focus();
+              ta?.select();
+            }}
+          />
           {scene.slides && scene.slides > 1 && (
             <div className="slide-seams" style={{ pointerEvents: 'none' }}>
               {Array.from({ length: scene.slides }, (_, i) => (

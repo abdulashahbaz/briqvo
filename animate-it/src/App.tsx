@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { useRoute, navigate } from './lib/router';
+import { useEffect, useRef } from 'react';
+import { useRoute, navigate, type Route } from './lib/router';
 import { Header, Footer, Toast } from './ui/Chrome';
 import { BrandKitDialog } from './ui/BrandKitDialog';
 import { TemplateDetail } from './ui/TemplateDetail';
@@ -21,18 +21,24 @@ const TITLES: Record<string, string> = {
 export function App() {
   const route = useRoute();
   const top = route.parts[0] ?? '';
+  const lastPage = useRef<Route | null>(null);
 
-  // Template detail opens as a modal over the gallery.
+  // Template detail opens as a modal over whatever page it was opened from.
   const detail = top === 'template' ? templateById(route.parts[1] ?? '') : undefined;
-  const base = top === 'template' ? 'templates' : top;
+  if (top !== 'template' && top !== 'editor') lastPage.current = route;
+  const bg: Route =
+    top === 'template'
+      ? lastPage.current ?? { path: '/templates', parts: ['templates', detail?.category ?? ''], query: new URLSearchParams() }
+      : route;
+  const base = bg.parts[0] ?? '';
 
   useEffect(() => {
     document.title = detail ? `${detail.name} template · Animate It` : TITLES[base] ?? TITLES[''];
   }, [base, detail]);
 
   useEffect(() => {
-    if (top !== 'template') window.scrollTo({ top: 0 });
-  }, [route.path, top]);
+    window.scrollTo({ top: 0 });
+  }, [bg.path]);
 
   if (top === 'editor')
     return (
@@ -49,7 +55,7 @@ export function App() {
       page = <HomePage />;
       break;
     case 'templates':
-      page = <TemplatesPage route={top === 'template' ? { ...route, parts: ['templates', detail?.category ?? ''] } : route} />;
+      page = <TemplatesPage route={bg} />;
       break;
     case 'pricing':
       page = <PricingPage />;
@@ -78,7 +84,7 @@ export function App() {
       {detail && (
         <TemplateDetail
           t={detail}
-          onClose={() => (history.length > 1 && document.referrer !== '' ? history.back() : navigate(`/templates/${detail.category}`))}
+          onClose={() => (lastPage.current ? history.back() : navigate(`/templates/${detail.category}`))}
         />
       )}
       <BrandKitDialog />

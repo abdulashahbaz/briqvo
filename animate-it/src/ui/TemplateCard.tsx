@@ -89,7 +89,7 @@ export const TemplateCard = memo(function TemplateCard({ t, format, alwaysPlay, 
       {!compact && (
         <div className="tcard-info">
           <span className="tcard-name">{t.name}</span>
-          <span className="tcard-sub">{t.variantName}</span>
+          <span className="tcard-sub">{brand.enabled ? 'Your brand' : t.variantName}</span>
         </div>
       )}
     </a>
