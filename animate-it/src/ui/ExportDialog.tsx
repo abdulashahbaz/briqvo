@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Download, Film, Image as ImageIcon, Loader2, Check, FileArchive, Repeat } from 'lucide-react';
 import { Modal } from './Modal';
 import type { Scene } from '../engine/types';
@@ -29,6 +29,16 @@ export function ExportDialog({ scene, fileBase, onClose, stillTime }: { scene: S
   const [result, setResult] = useState<ExportResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  useEffect(() => {
+    if (!result || result.filename.endsWith('.zip')) {
+      setPreviewUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(result.blob);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [result]);
   const isCarousel = !!scene.slides && scene.slides > 1;
   const slideW = isCarousel ? scene.w / scene.slides! : scene.w;
   const scale = RES.find((r) => r.id === res)!.scale;
@@ -178,6 +188,16 @@ export function ExportDialog({ scene, fileBase, onClose, stillTime }: { scene: S
             </div>
           </div>
         ) : result ? (
+          <div style={{ display: 'grid', gap: 12 }}>
+          {previewUrl && (
+            <div style={{ borderRadius: 12, overflow: 'hidden', background: 'var(--bg-sunk)', display: 'grid', placeItems: 'center', maxHeight: 280 }}>
+              {/\.(mp4|webm)$/.test(result.filename) ? (
+                <video src={previewUrl} autoPlay loop muted playsInline controls style={{ maxWidth: '100%', maxHeight: 280 }} />
+              ) : (
+                <img src={previewUrl} alt="Exported result" style={{ maxWidth: '100%', maxHeight: 280, objectFit: 'contain' }} />
+              )}
+            </div>
+          )}
           <div style={{ display: 'flex', gap: 10, alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ display: 'inline-flex', gap: 6, alignItems: 'center', fontWeight: 600, color: 'var(--ok)' }}>
               <Check size={18} /> {result.filename} · {formatBytes(result.bytes)}
@@ -185,6 +205,7 @@ export function ExportDialog({ scene, fileBase, onClose, stillTime }: { scene: S
             <button className="btn btn-outline" onClick={() => downloadBlob(result.blob, result.filename)}>
               <Download /> Download again
             </button>
+          </div>
           </div>
         ) : (
           <button className="btn btn-primary btn-lg" style={{ width: '100%' }} disabled={videoUnsupported} onClick={run}>

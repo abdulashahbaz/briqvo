@@ -14,6 +14,7 @@ function ago(ts: number) {
 
 export function ProjectsPage() {
   const [list, setList] = useState<ProjectMeta[] | null>(null);
+  const [confirming, setConfirming] = useState<string | null>(null);
   const refresh = () => listProjects().then(setList);
   useEffect(() => {
     void refresh();
@@ -65,18 +66,25 @@ export function ProjectsPage() {
                   >
                     <Copy />
                   </button>
-                  <button
-                    className="btn btn-icon btn-sm btn-ghost"
-                    title="Delete"
-                    aria-label="Delete"
-                    onClick={async () => {
-                      if (!confirm(`Delete “${p.name}”?`)) return;
-                      await deleteProject(p.id);
-                      void refresh();
-                    }}
-                  >
-                    <Trash2 />
-                  </button>
+                  {confirming === p.id ? (
+                    <button
+                      className="btn btn-sm"
+                      style={{ background: 'var(--danger)', color: '#fff' }}
+                      onClick={async () => {
+                        await deleteProject(p.id);
+                        setConfirming(null);
+                        void refresh();
+                      }}
+                      onBlur={() => setConfirming(null)}
+                      autoFocus
+                    >
+                      Delete
+                    </button>
+                  ) : (
+                    <button className="btn btn-icon btn-sm btn-ghost" title="Delete" aria-label={`Delete ${p.name}`} onClick={() => setConfirming(p.id)}>
+                      <Trash2 />
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

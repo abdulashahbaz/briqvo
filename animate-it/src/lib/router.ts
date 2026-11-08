@@ -25,9 +25,14 @@ export function useRoute(): Route {
 
 export function navigate(to: string, opts: { replace?: boolean } = {}) {
   const hash = '#' + (to.startsWith('/') ? to : '/' + to);
-  if (opts.replace) history.replaceState(null, '', hash);
-  else history.pushState(null, '', hash);
-  window.dispatchEvent(new HashChangeEvent('hashchange'));
+  try {
+    if (opts.replace) history.replaceState(null, '', hash);
+    else history.pushState(null, '', hash);
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
+  } catch {
+    // Some embedded/sandboxed frames refuse the History API; plain hash navigation still works.
+    location.hash = hash;
+  }
 }
 
 export const href = (to: string) => '#' + (to.startsWith('/') ? to : '/' + to);
