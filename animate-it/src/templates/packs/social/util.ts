@@ -6,7 +6,20 @@
  */
 import type { Anim, Ease, GroupLayer, Keyframe, Layer, Paint, PathLayer, TextAnim, TextLayer } from '../../../engine/types';
 import { type Ctx, rect, circle, ellipse, group, path, image, alpha, ICONS } from '../../kit';
+import { parseColor } from '../../../engine/color';
+import type { Palette } from '../../catalog';
 import { CHARS, WIDTHS } from './metrics';
+
+/** Chroma 0..1 (how colourful, independent of lightness). */
+export function sat(c: string): number {
+  const { r, g, b } = parseColor(c);
+  return (Math.max(r, g, b) - Math.min(r, g, b)) / 255;
+}
+
+/** The palette's most colourful accent (for likes, live dots, highlights). */
+export function vivid(p: Palette): string {
+  return sat(p.accent) >= 0.25 || sat(p.accent2) < sat(p.accent) ? p.accent : p.accent2;
+}
 
 // ---------------------------------------------------------------- metrics
 

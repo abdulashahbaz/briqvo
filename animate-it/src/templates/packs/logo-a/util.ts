@@ -40,7 +40,7 @@ export function estW(x: Ctx, s: string, size: number, o: EstOpts = {}): number {
   const per = o.body ? (o.upper ? m[3] : m[2]) : o.upper ? m[1] : m[0];
   const sz = o.body ? size : size * x.f.displayScale;
   const tr = o.tracking ?? (o.body ? 0 : x.f.displayTracking);
-  return (n * per + Math.max(0, n - 1) * tr) * sz * 1.04;
+  return (n * per + Math.max(0, n - 1) * tr) * sz * 1.09;
 }
 
 /** Shrink `size` so the estimated width stays within `maxW`. */

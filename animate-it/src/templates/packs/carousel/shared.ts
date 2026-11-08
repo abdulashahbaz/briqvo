@@ -31,6 +31,7 @@ export const XICONS: Record<string, string> = {
   mic: 'M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zM6.5 11.5a5.5 5.5 0 0 0 11 0M12 17v3.5',
   ticket: 'M3.5 7h17v3a2 2 0 0 0 0 4v3h-17v-3a2 2 0 0 0 0-4zM14 7v10',
   swap: 'M7 7h12M15 3l4 4-4 4M17 17H5M9 13l-4 4 4 4',
+  chev: 'M9 5l7 7-7 7',
 };
 
 export function iconD(name: string): string {
@@ -355,7 +356,7 @@ export function parseStat(s: string): { prefix: string; value: number; suffix: s
 /** Counter for a stat string (falls back to static text when it is not numeric). */
 export function statCounter(s: string, start: number, dur: number, ease: Ease = 'outExpo'): Counter | undefined {
   const st = parseStat(s);
-  if (!st) return undefined;
+  if (!st || (st.value <= 1 && st.decimals === 0)) return undefined;
   return { from: 0, to: st.value, start, dur, ease, decimals: st.decimals, prefix: st.prefix, suffix: st.suffix, separator: st.sep };
 }
 

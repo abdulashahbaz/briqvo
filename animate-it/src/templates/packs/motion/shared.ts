@@ -139,6 +139,30 @@ export interface Fit extends Wrapped {
   px: number;
   /** Rendered block height (lines × line height). */
   h: number;
+  /** Wrap width to give the layer (narrowest width keeping the line count when balanced). */
+  wrapW: number;
+}
+
+/** Narrowest wrap width (≤ maxW) that keeps `text` in the same number of lines — avoids orphans. */
+function balancedWidth(f: FontRef, text: string, px: number, tr: number, maxW: number): number {
+  const n = wrapText(f, text, px, tr, maxW).lines.length;
+  if (n <= 1) return maxW;
+  const words = text.split(/\s+/).filter(Boolean);
+  const widest = Math.max(...words.map((w) => wordWidth(f, w, px, tr)));
+  let lo = Math.max(widest, maxW / n);
+  let hi = maxW;
+  for (let i = 0; i < 16; i++) {
+    const mid = (lo + hi) / 2;
+    if (wrapText(f, text, px, tr, mid).lines.length <= n) hi = mid;
+    else lo = mid;
+  }
+  return Math.min(maxW, hi + 1);
+}
+
+function finishFit(f: FontRef, s: string, size: number, px: number, tr: number, lh: number, maxW: number, balance: boolean, wrap = true): Fit {
+  const wrapW = balance && wrap ? balancedWidth(f, s, px, tr, maxW) : maxW;
+  const wr = wrapText(f, s, px, tr, wrap ? wrapW : undefined);
+  return { ...wr, size, px, h: wr.lines.length * px * lh, wrapW };
 }
 
 /**
@@ -148,7 +172,18 @@ export interface Fit extends Wrapped {
 export function fitTitle(
   x: Ctx,
   text: string,
-  o: { maxW: number; max: number; maxH?: number; maxLines?: number; lineHeight?: number; tracking?: number; upper?: boolean; min?: number; wrap?: boolean },
+  o: {
+    maxW: number;
+    max: number;
+    maxH?: number;
+    maxLines?: number;
+    lineHeight?: number;
+    tracking?: number;
+    upper?: boolean;
+    min?: number;
+    wrap?: boolean;
+    balance?: boolean;
+  },
 ): Fit {
   const f = displayFont(x);
   const ds = x.f.displayScale;
@@ -157,26 +192,25 @@ export function fitTitle(
   const s = o.upper ? text.toUpperCase() : text;
   const words = s.split(/\s+/).filter(Boolean);
   const min = o.min ?? o.max * 0.15;
+  const wrap = o.wrap !== false;
   let size = o.max;
   for (let i = 0; i < 80; i++) {
     const px = size * ds;
-    const wr = wrapText(f, s, px, tr, o.wrap === false ? undefined : o.maxW);
+    const wr = wrapText(f, s, px, tr, wrap ? o.maxW : undefined);
     const widest = Math.max(wr.w, ...words.map((w) => wordWidth(f, w, px, tr)));
     const h = wr.lines.length * px * lh;
     const ok = widest <= o.maxW && (o.maxH === undefined || h <= o.maxH) && (o.maxLines === undefined || wr.lines.length <= o.maxLines);
-    if (ok || size <= min) return { ...wr, size, px, h };
+    if (ok || size <= min) break;
     size *= 0.97;
   }
-  const px = size * ds;
-  const wr = wrapText(f, s, px, tr, o.maxW);
-  return { ...wr, size, px, h: wr.lines.length * px * lh };
+  return finishFit(f, s, size, size * ds, tr, lh, o.maxW, !!o.balance, wrap);
 }
 
 /** Same as fitTitle but for the body face (size is rendered px). */
 export function fitBody(
   x: Ctx,
   text: string,
-  o: { maxW: number; max: number; maxH?: number; maxLines?: number; lineHeight?: number; tracking?: number; upper?: boolean; weight?: number; min?: number },
+  o: { maxW: number; max: number; maxH?: number; maxLines?: number; lineHeight?: number; tracking?: number; upper?: boolean; weight?: number; min?: number; balance?: boolean },
 ): Fit {
   const f = bodyFont(x, o.weight);
   const tr = o.tracking ?? 0;
@@ -190,11 +224,10 @@ export function fitBody(
     const widest = Math.max(wr.w, ...words.map((w) => wordWidth(f, w, size, tr)));
     const h = wr.lines.length * size * lh;
     const ok = widest <= o.maxW && (o.maxH === undefined || h <= o.maxH) && (o.maxLines === undefined || wr.lines.length <= o.maxLines);
-    if (ok || size <= min) return { ...wr, size, px: size, h };
+    if (ok || size <= min) break;
     size *= 0.97;
   }
-  const wr = wrapText(f, s, size, tr, o.maxW);
-  return { ...wr, size, px: size, h: wr.lines.length * size * lh };
+  return finishFit(f, s, size, size, tr, lh, o.maxW, !!o.balance);
 }
 
 // ------------------------------------------------------------------ tracks

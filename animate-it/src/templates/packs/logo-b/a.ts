@@ -224,7 +224,9 @@ const blobBloom: Recipe = {
       return circle(`drop-${i}`, o.r, {
         x: k([t0, bx + Math.cos(o.a) * S * 0.3], [t0 + 0.8, fx, 'outBack']),
         y: thenBob(k([t0, by + Math.sin(o.a) * S * 0.3], [t0 + 0.8, fy, 'outBack']), fy, 0.8 * u, t0 + 0.8, dur, 1, i % 2 ? 1 : -1),
+        scale: k([t0, 0.4], [t0 + 0.5, 1, 'outBack']),
         fill: o.c,
+        start: t0,
       });
     });
 
@@ -449,10 +451,10 @@ const dropSpin: Recipe = {
   build(x) {
     const { u, cx, cy, p, H } = x;
     const land = x.isLandscape;
-    const L = x.pick({ story: 40 * u, portrait: 32 * u, landscape: 30 * u, default: 28 * u });
+    const L = x.pick({ story: 46 * u, portrait: 32 * u, landscape: 30 * u, default: 28 * u });
     const tTrack = 0.18;
     const maxTW = land ? 96 * u : 86 * u;
-    const B = fitTitle(x, x.c.brand, x.pick({ story: 16 * u, portrait: 13 * u, landscape: 13 * u, default: 11.5 * u }), maxTW);
+    const B = fitTitle(x, x.c.brand, x.pick({ story: 17.5 * u, portrait: 13 * u, landscape: 13 * u, default: 11.5 * u }), maxTW);
     const T = fitBody(x, x.c.tagline, x.pick({ story: 4.4 * u, portrait: 3.6 * u, default: 3.3 * u }), maxTW, tTrack, true);
     const bh = titleH(x, B);
     const bw = titleW(x, x.c.brand, B);

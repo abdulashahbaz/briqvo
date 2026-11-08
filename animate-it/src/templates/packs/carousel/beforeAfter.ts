@@ -4,7 +4,7 @@ import { type Recipe, rect, circle, group, k, tween, fadeIn, pop, ta, alpha, ler
 import { chip, chipW, dots, fadeUp, glow, icon, seamLine, shadowCol, slideX, swipeCue } from './shared';
 
 /** Mock web page used on the before/after slides (card-local layers). */
-function mockPage(x: Ctx, id: string, w: number, h: number, state: 'before' | 'after'): Layer[] {
+function mockPage(x: Ctx, id: string, w: number, state: 'before' | 'after'): Layer[] {
   const { u, p } = x;
   const L: Layer[] = [];
   if (state === 'before') {
@@ -209,7 +209,7 @@ export const beforeAfter: Recipe = {
       const mw = 44 * u;
       const mh = 30 * u;
       L.push(
-        glow('cv-glow', 44 * u, { x: X + S / 2, y: 40 * u, color: p.accent, a: 0.16, opacity: fadeIn(0, 1) }),
+        glow('cv-glow', 44 * u, { x: X + S / 2, y: 36 * u, color: p.accent, a: 0.16, opacity: fadeIn(0, 1) }),
         group(
           'cv-before',
           [
@@ -220,7 +220,7 @@ export const beforeAfter: Recipe = {
           ],
           {
             x: X + S * 0.39,
-            y: k([0.1, 48 * u], [0.9, 36 * u, 'outExpo']),
+            y: k([0.1, 44 * u], [0.9, 32 * u, 'outExpo']),
             w: mw,
             h: mh,
             rotation: -7,
@@ -238,7 +238,7 @@ export const beforeAfter: Recipe = {
           ],
           {
             x: k([0.45, X + S * 0.8], [1.35, X + S * 0.61, 'outExpo']),
-            y: 43 * u,
+            y: 39 * u,
             w: mw,
             h: mh,
             rotation: k([0.45, 18], [1.45, 5, 'outBack']),
@@ -247,7 +247,7 @@ export const beforeAfter: Recipe = {
         ),
         chip(x, 'cv-kicker', x.c.kicker, {
           x: X + m,
-          y: 66 * u,
+          y: 61 * u,
           size: 2.9 * u,
           fill: alpha(p.accent, 0.12),
           color: p.accent,
@@ -259,7 +259,7 @@ export const beforeAfter: Recipe = {
         x.title('cv-title', x.c.title, {
           size: 10.6 * u,
           x: X + m,
-          y: 71.5 * u,
+          y: 66.5 * u,
           w: S - 2 * m,
           ax: 0,
           ay: 0,
@@ -302,7 +302,7 @@ export const beforeAfter: Recipe = {
           opacity: fadeIn(1.05, 0.2),
           scale: k([1.05, 0.4], [1.4, 1, 'outBack']),
         }),
-        group([...chrome(x, 'bf-card', cw, ch), ...mockPage(x, 'bf-pg', cw, ch, 'before')].length ? 'bf-card' : 'bf-card', [...chrome(x, 'bf-cc', cw, ch), ...mockPage(x, 'bf-pg', cw, ch, 'before')], {
+        group('bf-card', [...chrome(x, 'bf-cc', cw, ch), ...mockPage(x, 'bf-pg', cw, 'before')], {
           x: X + m,
           y: k([0.15, cardY + 8 * u], [1.0, cardY, 'outExpo']),
           w: cw,
@@ -348,10 +348,10 @@ export const beforeAfter: Recipe = {
           'af-card',
           [
             ...chrome(x, 'af-cc', cw, ch),
-            ...mockPage(x, 'af-old', cw, ch, 'before'),
+            ...mockPage(x, 'af-old', cw, 'before'),
             group(
               'af-new',
-              [rect('af-new-bg', { x: 0, y: 8.6 * u, ax: 0, ay: 0, w: cw, h: ch - 8.6 * u - 3 * u, fill: p.surface }), ...mockPage(x, 'af-pg', cw, ch, 'after')],
+              [rect('af-new-bg', { x: 0, y: 8.6 * u, ax: 0, ay: 0, w: cw, h: ch - 8.6 * u - 3 * u, fill: p.surface }), ...mockPage(x, 'af-pg', cw, 'after')],
               {
                 x: 0,
                 y: 0,
@@ -476,7 +476,7 @@ export const beforeAfter: Recipe = {
         glow('ct-glow', 34 * u, { x: cx, y: 34 * u, color: p.accent, a: 0.22, scale: tween(0.4, 1, 0.1, 1.4, 'outCubic') }),
         circle('ct-badge', 11 * u, { x: cx, y: 34 * u, fill: p.accent, scale: pop(0.15, 0.8, 'spring') }),
         icon('ct-pen', 'pen', { x: cx, y: 34 * u, size: 10 * u, color: p.onAccent, sw: 1.8, trimEnd: k([0.5, 0], [1.3, 1, 'inOutCubic']) }),
-        x.title('ct-title', x.c.cta, { size: 8.6 * u, x: cx, y: 67 * u, w: S - 2 * m, ay: 1, lineHeight: 1.04, anim: ta.rise(0.4, { stagger: 0.06 }) }),
+        x.title('ct-title', x.c.cta, { size: 8.6 * u, x: cx, y: 67 * u, w: S - 2 * m - 12 * u, ay: 1, lineHeight: 1.04, anim: ta.rise(0.4, { stagger: 0.06 }) }),
         x.body('ct-sub', x.c.ctaSub, { size: 4 * u, x: cx, y: 71.5 * u, w: S - 2 * m - 4 * u, ay: 0, fill: p.muted, anim: fadeUp(0.75) }),
         chip(x, 'ct-btn', x.c.ctaBtn, {
           x: cx,

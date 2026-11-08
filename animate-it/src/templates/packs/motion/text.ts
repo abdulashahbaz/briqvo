@@ -214,11 +214,11 @@ const echoStack: Recipe = {
     const tr = Math.max(0.01, x.f.displayTracking + 0.03);
     const vm = vmetrics(f);
     const wEm = runWidth(f, word, 1, tr);
-    const maxCopyW = x.pick({ landscape: W * 0.5, story: W * 0.88, default: W * 0.84 });
-    const stackH = x.pick({ landscape: H * 0.72, story: H * 0.66, portrait: H * 0.7, default: H * 0.7 });
+    const maxCopyW = x.pick({ landscape: W * 0.5, story: W * 0.9, default: W * 0.84 });
+    const stackH = x.pick({ landscape: H * 0.72, story: H * 0.7, portrait: H * 0.7, default: H * 0.7 });
     const pitchK = vm.cap + 0.17;
     const px = Math.min(maxCopyW / wEm, stackH / (4 * pitchK + vm.cap), 40 * u);
-    const pitch = Math.min(px * pitchK * 1.6, Math.max(px * pitchK, (stackH - vm.cap * px) / 4));
+    const pitch = Math.min(px * pitchK * (x.isStory ? 2.1 : 1.6), Math.max(px * pitchK, (stackH - vm.cap * px) / 4));
     const copyW = wEm * px;
     const pitchX = copyW + spaceWidth(f, px, tr);
     const shift = pitchX * 1.5;
@@ -236,20 +236,26 @@ const echoStack: Recipe = {
       const delay = Math.abs(r - 2) * 0.09;
       return k([0, cx + d * shift], [3.9 + delay, cx, ease]);
     };
+    // Outline = double-width stroke underneath + background-coloured fill on top. This keeps the
+    // outline clean on variable fonts whose glyphs have overlapping contours.
     for (let r = 0; r < 5; r++) {
       const dist = Math.abs(r - 2);
+      const common = {
+        size: px / ds,
+        x: rowX(r),
+        y: stackCy + (r - 2) * pitch - capOff,
+        tracking: tr,
+        lineHeight: 1.02,
+        opacity: fadeIn(dist * 0.06, 0.5),
+      };
       layers.push(
         x.title(`row-${r}`, rowText, {
-          size: px / ds,
-          x: rowX(r),
-          y: stackCy + (r - 2) * pitch - capOff,
-          tracking: tr,
-          lineHeight: 1.02,
+          ...common,
           fill: 'transparent',
           stroke: dist === 0 ? p.accent : alpha(p.fg, dist === 1 ? 0.8 : 0.38),
-          strokeWidth: sw,
-          opacity: fadeIn(dist * 0.06, 0.5),
+          strokeWidth: sw * 2,
         }),
+        x.title(`row-${r}-cut`, rowText, { ...common, fill: p.bg }),
       );
     }
     const wipeT = 1.45;
@@ -288,7 +294,7 @@ const echoStack: Recipe = {
       }),
     );
 
-    const capFit = fitBody(x, x.c.caption, { maxW: W - 2 * 8 * u - 18 * u, max: 2.7 * u, weight: 700, tracking: 0.2, upper: true, maxLines: 1 });
+    const capFit = fitBody(x, x.c.caption, { maxW: W - 2 * 8 * u - 18 * u, max: x.isStory ? 3.2 * u : 2.7 * u, weight: 700, tracking: 0.2, upper: true, maxLines: 1 });
     const capW = capFit.w;
     layers.push(
       x.body('caption', x.c.caption, {
@@ -355,12 +361,12 @@ const terminalType: Recipe = {
     const inkMuted = alpha(ink, 0.55);
     const acc = light ? shade(p.accent, 0.3) : p.accent;
     const L = x.isLandscape;
-    const m = x.pick({ landscape: 9 * u, default: 8 * u });
-    const ww = x.pick({ landscape: 90 * u, story: 86 * u, default: 84 * u });
+    const m = x.pick({ landscape: 8 * u, default: 7 * u });
+    const ww = x.pick({ landscape: 98 * u, story: 88 * u, default: 86 * u });
 
     // Code size, shrunk if any line would overflow the window.
     const bf = bodyFont(x);
-    let cs = x.pick({ landscape: 2.9 * u, story: 3.7 * u, portrait: 3.4 * u, default: 3.2 * u });
+    let cs = x.pick({ landscape: 3.3 * u, story: 4.3 * u, portrait: 3.9 * u, default: 3.5 * u });
     const promptStr = `${x.c.prompt} $`;
     const measureNeed = (sz: number) =>
       Math.max(
@@ -377,13 +383,14 @@ const terminalType: Recipe = {
 
     // Headline (typed, display face).
     const df = displayFont(x);
-    const hlW = L ? W - ww - m * 2 - 7 * u : ww;
+    const hlW = L ? W - ww - m * 2 - 6 * u : ww;
     const hFit = fitTitle(x, x.c.headline, {
       maxW: hlW,
       maxLines: L ? 3 : 3,
-      maxH: L ? H * 0.6 : x.pick({ story: H * 0.3, portrait: H * 0.26, default: H * 0.24 }),
-      max: x.pick({ landscape: 12 * u, story: 14 * u, portrait: 11.5 * u, default: 10 * u }),
+      maxH: L ? H * 0.6 : x.pick({ story: H * 0.3, portrait: H * 0.27, default: H * 0.22 }),
+      max: x.pick({ landscape: 15 * u, story: 16 * u, portrait: 13 * u, default: 11 * u }),
       lineHeight: 1.04,
+      balance: !L,
     });
     const gap = x.pick({ landscape: 0, story: 8 * u, default: 6 * u });
     const winLeft = L ? W - m - ww : cx - ww / 2;
@@ -496,7 +503,7 @@ const terminalType: Recipe = {
         circle('glow', x.pick({ landscape: 60 * u, default: 70 * u }), {
           x: winLeft + ww / 2,
           y: winTop + wh / 2,
-          fill: radial(0.5, 0.5, 0.7, alpha(p.accent, light ? 0.16 : 0.22), alpha(p.accent, 0)),
+          fill: radial(0.5, 0.5, 0.7, alpha(p.accent, light ? 0.16 : 0.13), alpha(p.accent, 0)),
           opacity: fadeIn(0.1, 1.2),
         }),
         group('window', winChildren, {
@@ -513,7 +520,7 @@ const terminalType: Recipe = {
           y: hy,
           ax: 0,
           ay: 0,
-          w: hlW,
+          w: hFit.wrapW,
           align: 'left',
           lineHeight: 1.04,
           reveal: k([tH0, 0], [tH1, 1, 'linear']),
@@ -562,96 +569,94 @@ const numberWindow: Recipe = {
     const tr = x.f.displayTracking;
     const vm = vmetrics(f);
     const wEm = runWidth(f, big, 1, tr);
-    const cwMax = x.pick({ landscape: 100 * u, story: 84 * u, portrait: 80 * u, square: 70 * u, default: 76 * u });
-    const chMax = x.pick({ landscape: 50 * u, story: 76 * u, portrait: 60 * u, square: 44 * u, default: 50 * u });
-    const crop = 0.8;
-    const px = Math.min((cwMax * 1.06) / wEm, chMax / (vm.cap * crop));
-    const cw = Math.min(cwMax, wEm * px * 0.94);
+    // The card hugs the number horizontally and crops it top and bottom.
+    const cwMax = x.pick({ landscape: 104 * u, story: 86 * u, portrait: 82 * u, square: 74 * u, default: 78 * u });
+    const chMax = x.pick({ landscape: 46 * u, story: 64 * u, portrait: 52 * u, square: 40 * u, default: 46 * u });
+    const crop = 0.78;
+    const padK = 0.08;
+    const px = Math.min(cwMax / (wEm + padK * 2), chMax / (vm.cap * crop), 90 * u);
+    const cw = (wEm + padK * 2) * px;
     const ch = vm.cap * px * crop;
-    const rad = 2.2 * u;
+    const rad = 1.6 * u;
 
-    const labelFit = fitTitle(x, x.c.label, { maxW: Math.max(cw, 60 * u), maxLines: 2, max: x.pick({ landscape: 6 * u, default: 7 * u }), lineHeight: 1.05 });
-    const eyeH = 3 * u;
-    const g1 = 4.5 * u;
-    const g2 = 5 * u;
+    const labelW = Math.max(cw, 64 * u);
+    const labelFit = fitTitle(x, x.c.label, {
+      maxW: labelW,
+      maxLines: 2,
+      max: x.pick({ landscape: 6 * u, story: 8.5 * u, default: 7 * u }),
+      lineHeight: 1.05,
+      balance: true,
+    });
+    const eyeSize = x.pick({ story: 3.4 * u, default: 2.8 * u });
+    const eyeH = eyeSize * 1.2;
+    const g1 = x.pick({ story: 6 * u, default: 4.5 * u });
+    const g2 = x.pick({ story: 6.5 * u, default: 5 * u });
     const total = eyeH + g1 + ch + g2 + labelFit.h;
     const brandY = H - x.pick({ landscape: 6 * u, default: 7 * u });
-    const top = Math.min(cy - total / 2, brandY - 6 * u - total);
+    const top = Math.min(cy - total / 2 - x.pick({ story: 4 * u, default: 0 }), brandY - 7 * u - total);
     const cardTop = top + eyeH + g1;
     const cardY = cardTop + ch / 2;
     const cardLeft = cx - cw / 2;
     const numY = cardY - capShift(f, px);
-    const numX = k([0, cx + 5 * u], [2.6, cx, [0.2, 0.9, 0.3, 1]]);
+    const numX = k([0, cx + 6 * u], [2.8, cx, [0.2, 0.9, 0.3, 1]]);
     const inE: [number, number, number, number] = [0.7, 0, 0.2, 1];
-    const leftT = k([0.35, -cw - 6 * u], [1.45, cardLeft, inE]);
-    const frameOff = 1.8 * u;
+    const t0 = 0.3;
+    const t1 = 1.4;
+    const leftT = k([t0, -cw - 6 * u], [t1, cardLeft, inE]);
+    const off = 1.6 * u;
 
-    const corner = (id: string, px0: number, py0: number, rot: number) =>
-      path(id, 'M0 10 V0 H10', 10, 10, {
-        x: px0,
-        y: py0,
-        w: 2.6 * u,
-        h: 2.6 * u,
-        ax: 0,
-        ay: 0,
-        rotation: rot,
-        stroke: p.fg,
-        strokeWidth: 1.1,
-        lineCap: 'square',
-        trimEnd: k([1.55, 0], [2.1, 1, 'outCubic']),
-      });
-    const cg = 2.4 * u;
     return {
-      background: radial(0.5, 0.45, 0.85, p.bg, p.bg2),
+      background: p.bg,
       layers: [
+        circle('halo', Math.max(cw, ch) * 0.75, {
+          x: cx,
+          y: cardY,
+          fill: radial(0.5, 0.5, 0.7, alpha(p.bg2, 0.9), alpha(p.bg2, 0)),
+          scale: k([0, 0.6], [2.2, 1, 'outCubic']),
+        }),
+        // Faint ghost: shows the number outside the sliding window, then dissolves once the card lands.
         x.title('num-ghost', big, {
           size: px / ds,
           x: numX,
           y: numY,
-          fill: 'transparent',
-          stroke: alpha(p.fg, 0.24),
-          strokeWidth: Math.max(1.3, px * 0.006),
-          opacity: fadeIn(0.05, 0.7),
+          fill: alpha(p.fg, 0.1),
+          opacity: k([0, 0], [0.45, 1, 'outCubic'], [t1 + 0.1, 1], [t1 + 0.7, 0, 'inOutSine']),
         }),
         rect('frame', {
-          x: k([0.47, -cw - 6 * u + frameOff], [1.6, cardLeft + frameOff, inE]),
-          y: cardTop + frameOff,
+          x: k([t0 + 0.12, -cw - 6 * u + off], [t1 + 0.16, cardLeft + off, inE]),
+          y: cardTop + off,
           ax: 0,
           ay: 0,
           w: cw,
           h: ch,
           radius: rad,
-          stroke: alpha(p.fg, 0.55),
-          strokeWidth: Math.max(1.2, 0.18 * u),
+          stroke: alpha(p.fg, 0.6),
+          strokeWidth: Math.max(1.2, 0.16 * u),
         }),
         group(
           'card',
           [
-            rect('card-fill', { x: 0, y: 0, ax: 0, ay: 0, w: W, h: H, fill: linear(120, p.accent, shade(p.accent, -0.14)) }),
+            rect('card-fill', { x: 0, y: 0, ax: 0, ay: 0, w: W, h: H, fill: linear(115, p.accent, shade(p.accent, -0.12)) }),
             x.title('num-solid', big, { size: px / ds, x: numX, y: numY, fill: p.onAccent }),
           ],
           { x: 0, y: 0, w: W, h: H, ax: 0, ay: 0, mask: { shape: 'rect', x: leftT, y: cardTop, w: cw, h: ch, r: rad } },
         ),
-        corner('corner-tl', cardLeft - cg, cardTop - cg, 0),
-        corner('corner-tr', cardLeft + cw + cg, cardTop - cg, 90),
-        corner('corner-br', cardLeft + cw + cg, cardTop + ch + cg, 180),
-        corner('corner-bl', cardLeft - cg, cardTop + ch + cg, 270),
         x.body('eyebrow', x.c.eyebrow, {
-          size: 2.8 * u,
+          size: eyeSize,
           weight: 700,
           uppercase: true,
           tracking: 0.24,
           y: top + eyeH / 2,
           fill: p.accent,
-          anim: ta.chars(1.25, { stagger: 0.035 }),
+          anim: ta.chars(1.2, { stagger: 0.035 }),
         }),
         x.title('label', x.c.label, {
           size: labelFit.size,
           y: cardTop + ch + g2,
           ay: 0,
-          w: Math.max(cw, 60 * u),
+          w: labelFit.wrapW,
           lineHeight: 1.05,
-          anim: ta.rise(1.5, { stagger: 0.06 }),
+          anim: ta.rise(1.45, { stagger: 0.06 }),
         }),
         x.body('brand', x.c.brand, { size: 2.4 * u, weight: 600, uppercase: true, tracking: 0.2, y: brandY, fill: p.muted, opacity: fadeIn(2.0, 0.6) }),
       ],
@@ -681,24 +686,19 @@ const splitTone: Recipe = {
   ],
   build(x) {
     const { u, W, H, p, cx, cy } = x;
-    const L = x.isLandscape;
     const m = x.pick({ landscape: 12 * u, default: 8 * u });
     const lh = 1.0;
     const fit = fitTitle(x, x.c.headline, {
       maxW: W - 2 * m,
       maxLines: x.pick({ landscape: 3, story: 5, default: 4 }),
       maxH: x.pick({ landscape: H * 0.52, story: H * 0.5, default: H * 0.56 }),
-      max: x.pick({ landscape: 12.5 * u, story: 15 * u, default: 12.5 * u }),
+      max: x.pick({ landscape: 12.5 * u, story: 16 * u, default: 13 * u }),
       lineHeight: lh,
+      balance: true,
     });
     const subFit = fitBody(x, x.c.sub, { maxW: W - 2 * m, max: x.pick({ landscape: 3.2 * u, story: 4 * u, default: 3.5 * u }), maxLines: 2 });
     const eyeY = cy - fit.h / 2 - 7 * u;
     const subY = cy + fit.h / 2 + 5 * u;
-    const lineH = fit.px * lh;
-    const n = fit.lines.length;
-    const mid = Math.floor(n / 2);
-    const splitY = n === 1 ? cy : cy - fit.h / 2 + mid * lineH + lineH * 0.56;
-
     const copyOf = (id: string, c: { eye: string; head: string; sub: string; dot: string }): Layer[] => [
       rect(`${id}-dot`, { x: cx, y: eyeY - 4.2 * u, w: 1.2 * u, h: 1.2 * u, radius: 0.6 * u, fill: c.dot, scale: k([0.1, 0], [0.6, 1, 'outBack']) }),
       x.body(`${id}-eyebrow`, x.c.eyebrow, {
@@ -713,7 +713,7 @@ const splitTone: Recipe = {
       x.title(`${id}-headline`, x.c.headline, {
         size: fit.size,
         y: cy,
-        w: W - 2 * m,
+        w: fit.wrapW,
         lineHeight: lh,
         fill: c.head,
         anim: ta.riseLines(0.3, { stagger: 0.12, dur: 1.0 }),
@@ -733,12 +733,17 @@ const splitTone: Recipe = {
     const a1 = 2.05;
     const b0 = 2.45;
     const b1 = 3.35;
-    const mask = L
-      ? { shape: 'rect' as const, x: k([b0, 0], [b1, cx, e1]), y: 0, w: k([a0, 0], [a1, W, e1], [b0, W], [b1, W - cx, e1]), h: H }
-      : { shape: 'rect' as const, x: 0, y: k([a0, H], [a1, 0, e1], [b0, 0], [b1, splitY, e1]), w: W, h: k([a0, 0], [a1, H, e1], [b0, H], [b1, H - splitY, e1]) };
-    const edge = L
-      ? rect('edge', { x: k([a0, 0], [a1, W, e1], [b0, 0], [b1, cx, e1]), y: cy, w: 0.35 * u, h: H, fill: p.accent2, opacity: k([a0, 0], [a0 + 0.1, 1], [a1, 1], [a1 + 0.05, 0], [b0, 0], [b0 + 0.1, 1], [b1 - 0.1, 1], [b1 + 0.4, 0]) })
-      : rect('edge', { x: cx, y: k([a0, H], [a1, 0, e1], [b0, 0], [b1, splitY, e1]), w: W, h: 0.35 * u, fill: p.accent2, opacity: k([a0, 0], [a0 + 0.1, 1], [a1, 1], [a1 + 0.05, 0], [b0, 0], [b0 + 0.1, 1], [b1 - 0.1, 1], [b1 + 0.4, 0]) });
+    // The panel sweeps in from the left, covers the frame, then its leading edge retreats to the centre
+    // so the headline ends split down the middle.
+    const mask = { shape: 'rect' as const, x: k([b0, 0], [b1, cx, e1]), y: 0, w: k([a0, 0], [a1, W, e1], [b0, W], [b1, W - cx, e1]), h: H };
+    const edge = rect('edge', {
+      x: k([a0, 0], [a1, W, e1], [b0, 0], [b1, cx, e1]),
+      y: cy,
+      w: 0.35 * u,
+      h: H,
+      fill: p.accent2,
+      opacity: k([a0, 0], [a0 + 0.1, 1], [a1, 1], [a1 + 0.05, 0], [b0, 0], [b0 + 0.1, 1], [b1 - 0.1, 1], [b1 + 0.4, 0]),
+    });
 
     return {
       layers: [
@@ -746,7 +751,7 @@ const splitTone: Recipe = {
         group(
           'panel',
           [
-            rect('panel-fill', { x: 0, y: 0, ax: 0, ay: 0, w: W, h: H, fill: linear(L ? 0 : 90, p.accent, shade(p.accent, -0.12)) }),
+            rect('panel-fill', { x: 0, y: 0, ax: 0, ay: 0, w: W, h: H, fill: linear(0, p.accent, shade(p.accent, -0.12)) }),
             ...copyOf('b', { eye: alpha(p.onAccent, 0.8), head: p.onAccent, sub: alpha(p.onAccent, 0.78), dot: p.onAccent }),
           ],
           { x: 0, y: 0, w: W, h: H, ax: 0, ay: 0, mask },

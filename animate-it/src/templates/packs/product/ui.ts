@@ -3,7 +3,7 @@
  * deterministic text-width estimates (layout runs before web fonts load),
  * cursor / toggle / checkbox / icon / chart helpers and a responsive heading block.
  */
-import type { Anim, Counter, Ease, GroupLayer, Layer, PathLayer, TextLayer } from '../../../engine/types';
+import type { Anim, Counter, Ease, GroupLayer, Layer, Paint, PathLayer, TextLayer } from '../../../engine/types';
 import { sample } from '../../../engine/anim';
 import { luminance, parseColor } from '../../../engine/color';
 import type { Palette } from '../../catalog';
@@ -425,7 +425,7 @@ export function checkbox(id: string, o: { x: number; y: number; size: number; at
 export function icon(
   id: string,
   name: string,
-  o: { x: Anim<number>; y: Anim<number>; size: number; color: string; weight?: number; draw?: [number, number]; fill?: string } & Partial<Omit<PathLayer, 'type' | 'id' | 'd' | 'vw' | 'vh' | 'fill'>>,
+  o: { x: Anim<number>; y: Anim<number>; size: number; color: string; weight?: number; draw?: [number, number]; fill?: Anim<Paint> } & Partial<Omit<PathLayer, 'type' | 'id' | 'd' | 'vw' | 'vh' | 'fill'>>,
 ): PathLayer {
   const { size, color, weight = 1.8, draw, fill, ...rest } = o;
   return path(id, ICONS[name] ?? ICONS.sparkle, 24, 24, {
@@ -433,7 +433,7 @@ export function icon(
     h: size,
     stroke: color,
     strokeWidth: weight,
-    ...(fill ? { fill } : {}),
+    ...(fill !== undefined ? { fill } : {}),
     ...(draw ? { trimEnd: k([draw[0], 0], [draw[0] + draw[1], 1, 'inOutCubic']) } : {}),
     ...rest,
   });

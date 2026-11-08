@@ -91,7 +91,7 @@ export const frameTrace: Recipe = {
         path('ft-stroke', d, 100, 100, {
           x: F / 2, y: F / 2, w: F, h: F,
           stroke: p.accent,
-          strokeWidth: k([T0, 1.0 * u * vb], [T1, 1.0 * u * vb], [2.3, 0.6 * u * vb, 'inOutCubic']),
+          strokeWidth: k([T0, 1.0 * u * vb], [T1, 1.0 * u * vb], [2.3, 0.75 * u * vb, 'inOutCubic']),
           trimEnd: k([T0, 0], [T1, 1, 'inOutCubic']),
         }),
         ...nodes,

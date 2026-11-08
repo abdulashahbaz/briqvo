@@ -41,8 +41,8 @@ export const irisBloom: Recipe = {
         h: L * m * 2,
         stroke: alpha(p.onAccent, Math.max(0.05, 0.2 - i * 0.03)),
         strokeWidth: 0.25 * u,
-        scale: k([0.95 + i * 0.07, 0.55], [2.0 + i * 0.07, 1, 'outExpo']),
-        opacity: fadeIn(0.95 + i * 0.07, 0.4),
+        scale: k([0.75 + i * 0.07, 0.55], [1.8 + i * 0.07, 1, 'outExpo']),
+        opacity: fadeIn(0.75 + i * 0.07, 0.4),
       }),
     );
 
@@ -50,33 +50,33 @@ export const irisBloom: Recipe = {
       'ib-stage',
       [
         rect('ib-fill', { x: 0, y: 0, ax: 0, ay: 0, w: W, h: H, fill: radial(cx / W, my / H, 0.95, shade(p.accent, 0.1), shade(p.accent, -0.12)) }),
-        circle('ib-halo', L * 1.1, { x: cx, y: my, fill: radial(0.5, 0.5, 0.7, alpha(p.onAccent, 0.16), alpha(p.onAccent, 0)), scale: k([1.0, 0.3], [2.2, 1, 'outExpo']) }),
+        circle('ib-halo', L * 1.1, { x: cx, y: my, fill: radial(0.5, 0.5, 0.7, alpha(p.onAccent, 0.16), alpha(p.onAccent, 0)), scale: k([0.8, 0.3], [2.0, 1, 'outExpo']) }),
         ...rings,
         x.logo('ib-logo', {
           size: L,
           x: cx,
           y: my,
           color: p.onAccent,
-          scale: k([1.0, 0.25], [1.85, 1, 'spring']),
-          rotation: k([1.0, -30], [1.85, 0, 'outBack']),
-          opacity: fadeIn(1.0, 0.2),
+          scale: k([0.78, 0.25], [1.65, 1, 'spring']),
+          rotation: k([0.78, -30], [1.65, 0, 'outBack']),
+          opacity: fadeIn(0.78, 0.2),
         }),
         x.title('ib-name', x.c.brand, {
           size: nameSize,
           x: cx,
           y: ny,
           fill: p.onAccent,
-          anim: ta.rise(1.5, { by: 'char', stagger: 0.04, dur: 0.85 }),
+          anim: ta.rise(1.3, { by: 'char', stagger: 0.04, dur: 0.85 }),
         }),
         x.body('ib-tag', x.c.tagline, {
           size: tagSize,
           x: cx,
           y: ty,
           fill: alpha(p.onAccent, 0.78),
-          anim: ta.blur(1.95, { stagger: 0.07 }),
+          anim: ta.blur(1.75, { stagger: 0.07 }),
         }),
       ],
-      { x: 0, y: 0, ax: 0, ay: 0, w: W, h: H, mask: { shape: 'circle', x: cx, y: my, r: k([0.86, 0], [1.75, R, IRIS]) } },
+      { x: 0, y: 0, ax: 0, ay: 0, w: W, h: H, mask: { shape: 'circle', x: cx, y: my, r: k([0.62, 0], [1.5, R, IRIS]) } },
     );
 
     // Leading edge: a second-colour iris a beat ahead of the main one.
@@ -87,8 +87,8 @@ export const irisBloom: Recipe = {
       ay: 0,
       w: W,
       h: H,
-      mask: { shape: 'circle', x: cx, y: my, r: k([0.74, 0], [1.6, R, IRIS]) },
-      end: 1.8,
+      mask: { shape: 'circle', x: cx, y: my, r: k([0.5, 0], [1.36, R, IRIS]) },
+      end: 1.55,
     });
 
     return {
@@ -97,18 +97,18 @@ export const irisBloom: Recipe = {
         ellipse('ib-charge', {
           x: cx,
           y: my,
-          w: k([0.1, 16 * u], [0.8, 3 * u, 'inCubic']),
-          h: k([0.1, 16 * u], [0.8, 3 * u, 'inCubic']),
+          w: k([0.0, 22 * u], [0.55, 3.5 * u, 'inCubic']),
+          h: k([0.0, 22 * u], [0.55, 3.5 * u, 'inCubic']),
           stroke: p.accent,
-          strokeWidth: 0.35 * u,
-          opacity: k([0.1, 0], [0.35, 1, 'outCubic'], [0.7, 1], [0.82, 0]),
+          strokeWidth: 0.4 * u,
+          opacity: k([0.0, 0], [0.2, 1, 'outCubic'], [0.5, 1], [0.6, 0]),
         }),
-        circle('ib-dot', 1.5 * u, {
+        circle('ib-dot', 2 * u, {
           x: cx,
           y: my,
           fill: p.accent,
-          scale: k([0.05, 0], [0.4, 1, 'outBack'], [0.62, 0.7, 'inOutQuad'], [0.8, 1.6, 'outQuad']),
-          end: 1.0,
+          scale: k([0.0, 0], [0.3, 1, 'outBack'], [0.46, 0.7, 'inOutQuad'], [0.6, 1.6, 'outQuad']),
+          end: 0.8,
         }),
         lead,
         stage,

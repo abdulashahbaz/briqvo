@@ -156,13 +156,13 @@ const risingTide: Recipe = {
   build(x) {
     const { u, cx, cy, p, H } = x;
     const dur = 4.6;
-    const L = x.pick({ story: 52 * u, portrait: 44 * u, landscape: 38 * u, default: 40 * u });
+    const L = x.pick({ story: 60 * u, portrait: 46 * u, landscape: 38 * u, default: 40 * u });
     const maxTW = x.pick({ landscape: 120 * u, default: 84 * u });
-    const B = fitTitle(x, x.c.brand, x.pick({ story: 13 * u, portrait: 11 * u, default: 10 * u }), maxTW);
+    const B = fitTitle(x, x.c.brand, x.pick({ story: 15 * u, portrait: 11.5 * u, default: 10 * u }), maxTW);
     const tTrack = 0.16;
-    const T = fitBody(x, x.c.tagline, x.pick({ story: 4 * u, default: 3.3 * u }), maxTW, tTrack, true);
+    const T = fitBody(x, x.c.tagline, x.pick({ story: 4.4 * u, portrait: 3.5 * u, default: 3.3 * u }), maxTW, tTrack, true);
     const bh = titleH(x, B);
-    const g1 = x.pick({ story: 10 * u, default: 7 * u });
+    const g1 = x.pick({ story: 11 * u, default: 7 * u });
     const g2 = 2.8 * u;
     const block = L + g1 + bh + g2 + T * 1.35;
     const top = cy - block / 2;
@@ -296,15 +296,15 @@ const satellite: Recipe = {
   build(x) {
     const { u, W, H, cx, cy, p } = x;
     const dur = 4.8;
-    const D = x.pick({ story: 36 * u, portrait: 30 * u, landscape: 27 * u, default: 26 * u });
+    const D = x.pick({ story: 40 * u, portrait: 30 * u, landscape: 27 * u, default: 26 * u });
     const L = D * 0.56;
     const radii = x.pick({
-      story: [31, 40.5, 48],
+      story: [33, 41.5, 48.5],
       portrait: [27, 36, 45],
       landscape: [31, 46, 62],
       default: [25, 34.5, 44],
     }).map((v) => v * u);
-    const flats = x.tall ? [0.46, 0.39, 0.33] : [0.38, 0.31, 0.26];
+    const flats = x.pick({ story: [0.56, 0.48, 0.41], portrait: [0.46, 0.39, 0.33], default: [0.38, 0.31, 0.26] });
     const specs = [
       { tilt: -17, flat: flats[0], size: 1.8 * u, col: p.accent2, t0: 0.4, w: 0.9 },
       { tilt: 11, flat: flats[1], size: 2.6 * u, col: p.accent, t0: 0.6, w: 0.62 },
@@ -321,7 +321,7 @@ const satellite: Recipe = {
       }),
     );
     const maxTW = x.pick({ landscape: 120 * u, default: 84 * u });
-    const B = fitTitle(x, x.c.brand, x.pick({ story: 14.5 * u, portrait: 12 * u, default: 10.5 * u }), maxTW);
+    const B = fitTitle(x, x.c.brand, x.pick({ story: 16 * u, portrait: 12 * u, default: 10.5 * u }), maxTW);
     const tTrack = 0.2;
     const T = fitBody(x, x.c.tagline, x.pick({ story: 4.4 * u, portrait: 3.6 * u, default: 3.3 * u }), maxTW, tTrack, true);
     const bh = titleH(x, B);
@@ -497,8 +497,8 @@ const warpTunnel: Recipe = {
   build(x) {
     const { u, W, H, cx, cy, p } = x;
     const dur = 4.4;
-    const cw = x.pick({ landscape: 92 * u, story: 66 * u, portrait: 60 * u, default: 56 * u });
-    const ch = x.pick({ landscape: 54 * u, story: 104 * u, portrait: 74 * u, default: 56 * u });
+    const cw = x.pick({ landscape: 92 * u, story: 72 * u, portrait: 62 * u, default: 56 * u });
+    const ch = x.pick({ landscape: 54 * u, story: 114 * u, portrait: 76 * u, default: 56 * u });
     const rad = Math.min(cw, ch) * 0.09;
     const q = 1.24;
     const N = 27;
@@ -510,7 +510,7 @@ const warpTunnel: Recipe = {
     // Card content.
     const L = Math.min(cw, ch) * x.pick({ landscape: 0.34, story: 0.42, default: 0.36 });
     const tTrack = 0.18;
-    const Bs = fitTitle(x, x.c.brand, x.pick({ story: 11 * u, landscape: 9 * u, default: 8.5 * u }), cw - 12 * u);
+    const Bs = fitTitle(x, x.c.brand, x.pick({ story: 12.5 * u, landscape: 9 * u, default: 8.5 * u }), cw - 12 * u);
     const Ts = fitBody(x, x.c.tagline, x.pick({ story: 3.4 * u, default: 2.8 * u }), cw - 12 * u, tTrack, true);
     const bh = titleH(x, Bs);
     const g1 = x.pick({ story: 6 * u, default: 4 * u });

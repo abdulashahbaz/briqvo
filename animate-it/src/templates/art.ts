@@ -183,7 +183,8 @@ export const SAMPLE_LOGOS: Record<string, { name: string; src: string }> = {
   },
   bolt: {
     name: 'Bolt',
-    src: mark(`<rect x="10" y="10" width="180" height="180" rx="48" fill="#000"/><path d="M112 34 L58 112 H96 L86 166 L142 86 H104 Z" fill="#fff"/>`),
+    // Bolt is cut out (even-odd) so tinting keeps the shape readable.
+    src: mark(`<path fill="#000" fill-rule="evenodd" d="M58 10H142A48 48 0 0 1 190 58V142A48 48 0 0 1 142 190H58A48 48 0 0 1 10 142V58A48 48 0 0 1 58 10Z M112 34 L58 112 H96 L86 166 L142 86 H104 Z"/>`),
   },
   petal: {
     name: 'Petal',

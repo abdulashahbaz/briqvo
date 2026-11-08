@@ -106,7 +106,7 @@ export const accentSweep: Recipe = {
             weight: 600,
             uppercase: true,
             tracking: 0.14,
-            anim: ta.rise(w.done - 0.25, { stagger: 0.05 }),
+            anim: ta.rise(w.done - 0.25, { stagger: 0.05, from: { y: 1.6 } }),
           }),
         ],
         { x: k([w.done - 0.7, -5 * u], [w.done + 0.5, 0, 'outCubic']), y: 0, ax: 0, ay: 0, w: W, h: H },

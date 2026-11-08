@@ -95,7 +95,7 @@ export const splitShift: Recipe = {
           x: cx,
           y: ty,
           fill: p.muted,
-          anim: ta.rise(1.75, { stagger: 0.06 }),
+          anim: ta.rise(1.75, { stagger: 0.06, from: { y: 1.6 } }),
         }),
       ],
     };
