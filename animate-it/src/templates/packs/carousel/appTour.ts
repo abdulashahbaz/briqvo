@@ -1,7 +1,7 @@
 import type { Layer } from '../../../engine/types';
 import type { Ctx } from '../../kit';
 import { type Recipe, rect, circle, ellipse, group, phone, k, fadeIn, pop, ta, alpha, shade, linear } from '../../kit';
-import { ambient, chip, estW, fadeUp, icon, isDark, list, pad2, seamLine, shadowCol, slideX, star, swipeCue, tsz } from './shared';
+import { accentOn, ambient, chip, chipW, estW, fadeUp, icon, isDark, list, pad2, seamLine, shadowCol, slideX, star, swipeCue, tsz } from './shared';
 
 type Screen = (sw: number, sh: number) => Layer[];
 
@@ -322,8 +322,11 @@ export const appTour: Recipe = {
     const mkPhone = (id: string, cx: number, rot: number, scr: Screen, t: number, y = phoneY) =>
       phone(id, { x: cx, y: k([t, y + 30 * u], [t + 1.0, y, 'outExpo']), h: ph, body, rotation: k([t, rot * 2.5], [t + 1.2, rot, 'outBack']), opacity: fadeIn(t, 0.3) }, scr);
 
-    const floatChip = (id: string, label: string, ic: string, cx: number, cy: number, t: number) =>
-      chip(x, id, label, {
+    const floatChip = (id: string, label: string, ic: string, cx0: number, cy: number, t: number) => {
+      const X = Math.floor(cx0 / S) * S;
+      const hw = chipW(label, 2.8 * u, { icon: true }) / 2;
+      const cx = Math.min(X + S - m - hw, Math.max(X + m + hw, cx0));
+      return chip(x, id, label, {
         x: cx,
         y: ambient(cy, 0.8 * u, t + 0.6, dur, 1.4),
         ax: 0.5,
@@ -331,11 +334,12 @@ export const appTour: Recipe = {
         fill: p.surface,
         color: p.fg,
         icon: ic,
-        iconColor: p.accent,
+        iconColor: accentOn(p, p.surface),
         shadow: { color: shadowCol(p, 0.25), blur: 3 * u, y: 1 * u },
         scale: k([t, 0.4], [t + 0.6, 1, 'outBack']),
         opacity: fadeIn(t, 0.2),
       });
+    };
 
     // ---------------------------------------------------------------- cover
     {

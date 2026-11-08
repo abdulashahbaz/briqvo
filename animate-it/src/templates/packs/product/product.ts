@@ -585,7 +585,7 @@ const launchHero: Recipe = {
   id: 'launch-hero',
   name: 'Product Launch',
   category: 'product',
-  tags: ['product', 'launch', 'ecommerce', 'hero', 'price', 'drop', 'new'],
+  tags: ['product', 'launch', 'ecommerce', 'hero', 'price', 'drop', 'release'],
   description: 'Your product rises onto a stage, a sticker pops and the name, price and availability land.',
   duration: 5.2,
   images: [{ key: 'product', label: 'Product photo', art: 'product' }],

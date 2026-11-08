@@ -8,7 +8,7 @@
  * simultaneously, so the panorama stays continuous at every frame.
  */
 import type { Anim, Counter, Ease, EllipseLayer, GroupLayer, Layer, Paint, PathLayer, TextAnim, TextLayer } from '../../../engine/types';
-import { luminance } from '../../../engine/color';
+import { contrast, luminance } from '../../../engine/color';
 import type { Palette } from '../../catalog';
 import { type Ctx, type TextOpts, rect, circle, group, path, k, fadeIn, bob, alpha, shade, radial, ICONS } from '../../kit';
 
@@ -78,6 +78,9 @@ export function estW(label: string, size: number, upper = false, tracking = 0): 
 }
 
 export const isDark = (p: Palette) => luminance(p.bg) < 0.3;
+
+/** Accent when it reads on `bg`, otherwise the foreground colour. */
+export const accentOn = (p: Palette, bg: string, min = 2.6) => (contrast(p.accent, bg) >= min ? p.accent : p.fg);
 
 /** A soft drop-shadow colour derived from the background. */
 export const shadowCol = (p: Palette, a = 0.28) => alpha(shade(p.bg, -0.75), isDark(p) ? 0.55 : a);

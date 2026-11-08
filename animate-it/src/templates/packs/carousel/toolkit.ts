@@ -1,7 +1,7 @@
 import type { Layer } from '../../../engine/types';
 import type { Ctx } from '../../kit';
 import { type Recipe, rect, circle, group, k, fadeIn, pop, ta, alpha, shade, linear } from '../../kit';
-import { chip, chipW, progress, estW, fadeUp, icon, list, pad2, shadowCol, slideX, swipeCue, tsz } from './shared';
+import { accentOn, chip, chipW, progress, estW, fadeUp, icon, list, pad2, shadowCol, slideX, swipeCue, tsz } from './shared';
 
 /** App-style icon tile (gradient square + stroke icon). */
 function tile(x: Ctx, id: string, ic: string, o: { x: number; y: number; size: number; t: number; rot?: number; ax?: number; ay?: number }): Layer {
@@ -236,7 +236,7 @@ export const toolkitTop5: Recipe = {
           color: p.fg,
           stroke: alpha(p.fg, 0.12),
           icon: 'gift',
-          iconColor: p.accent,
+          iconColor: accentOn(p, p.surface),
           scale: k([0.5, 0.7], [1.0, 1, 'outBack']),
           opacity: fadeIn(0.5, 0.25),
         }),
@@ -246,8 +246,8 @@ export const toolkitTop5: Recipe = {
           `tl-best-${i}`,
           [
             rect(`tl-best-${i}-bg`, { x: 0, y: 0, ax: 0, ay: 0, w: S - 2 * m, h: 11 * u, radius: 2.6 * u, fill: p.surface, stroke: alpha(p.fg, 0.08), strokeWidth: 0.2 * u }),
-            icon(`tl-best-${i}-ic`, 'target', { x: 5 * u, y: 5.5 * u, size: 4.2 * u, color: p.accent, sw: 2 }),
-            x.body(`tl-best-${i}-l`, 'Best for', { size: 2.6 * u, x: 9.4 * u, y: 5.5 * u, ax: 0, align: 'left', weight: 700, fill: p.accent, uppercase: true, tracking: 0.14, lineHeight: 1 }),
+            icon(`tl-best-${i}-ic`, 'target', { x: 5 * u, y: 5.5 * u, size: 4.2 * u, color: accentOn(p, p.surface), sw: 2 }),
+            x.body(`tl-best-${i}-l`, 'Best for', { size: 2.6 * u, x: 9.4 * u, y: 5.5 * u, ax: 0, align: 'left', weight: 700, fill: accentOn(p, p.surface), uppercase: true, tracking: 0.14, lineHeight: 1 }),
             x.body(`tl-best-${i}-v`, best, { size: 3.6 * u, x: 9.4 * u + estW('Best for', 2.6 * u, true, 0.14) + 2.6 * u, y: 5.5 * u, ax: 0, align: 'left', weight: 600, fill: p.fg, lineHeight: 1 }),
           ],
           { x: X + m, y: k([0.9, 101 * u], [1.6, 98 * u, 'outExpo']), w: S - 2 * m, h: 11 * u, ax: 0, ay: 0, opacity: fadeIn(0.9, 0.4) },

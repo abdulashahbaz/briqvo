@@ -141,14 +141,14 @@ const reactionBurst: Recipe = {
   build(x) {
     const { u, W, H, p, c } = x;
     const ui = uiTheme(p);
-    const R = x.pick({ landscape: 16 * u, square: 14 * u, portrait: 16.5 * u, default: 20 * u });
-    const capSize = x.pick({ landscape: 7.4 * u, square: 6.2 * u, portrait: 7.2 * u, default: 9 * u });
+    const R = x.pick({ landscape: 16 * u, square: 14 * u, portrait: 16.5 * u, default: 23 * u });
+    const capSize = x.pick({ landscape: 7.4 * u, square: 6.2 * u, portrait: 7.2 * u, default: 10.2 * u });
     const capW = x.isLandscape ? 78 * u : 84 * u;
     const align: 'left' | 'center' = x.isLandscape ? 'left' : 'center';
     const cap = balance(fit(x.title('rb-cap', c.caption, { size: capSize, x: 0, y: 0, w: capW, ax: x.isLandscape ? 0 : 0.5, ay: 0, align, lineHeight: 1.06 }), capW, x.isLandscape ? 3 : 2), capW);
     const capH = blockH(cap, cap.w as number);
-    const pillH = x.pick({ story: 9 * u, default: 7.6 * u });
-    const hs = x.pick({ story: 3.4 * u, default: 2.8 * u });
+    const pillH = x.pick({ story: 10 * u, default: 7.6 * u });
+    const hs = x.pick({ story: 3.6 * u, default: 2.8 * u });
     const showHandle = !x.isSquare;
     let cx: number;
     let cy: number;
@@ -163,7 +163,7 @@ const reactionBurst: Recipe = {
       cy = H * 0.64;
       rise = cy - R - 9 * u;
     } else {
-      rise = x.pick({ square: 22 * u, portrait: 30 * u, default: 46 * u });
+      rise = x.pick({ square: 22 * u, portrait: 30 * u, default: 42 * u });
       const items = [
         { h: rise },
         { h: R * 2 },
@@ -191,7 +191,7 @@ const reactionBurst: Recipe = {
       const x0 = cx + (r() - 0.5) * R * 0.9;
       const dx = (r() - 0.5) * (x.isLandscape ? 34 : x.isStory ? 30 : 24) * u;
       const s = (0.6 + r() * 0.7) * R * 0.42;
-      const col = [p.accent, lerpColor(p.accent, p.bg, 0.4), shade(p.accent, 0.3)][i % 3];
+      const col = [p.accent, shade(p.accent, 0.35), lerpColor(p.accent, p.accent2, 0.35)][i % 3];
       hearts.push(
         path(`rb-h${i}`, ICONS.heart, 24, 24, {
           x: k([ts, x0], [ts + life * 0.33, x0 + dx * 0.55, 'inOutSine'], [ts + life * 0.66, x0 + dx * 0.2, 'inOutSine'], [ts + life, x0 + dx, 'inOutSine']),

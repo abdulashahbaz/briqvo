@@ -85,7 +85,15 @@ export function res(x: Ctx, st: TS): Resolved {
   };
 }
 
+/** Families whose running text is wider than the sum of their glyphs (contextual alternates). */
+const FUDGE: Record<string, number> = { Syne: 1.05 };
+
 function wordW(r: Resolved, tbl: Map<string, number>, w: string): number {
+  const f = FUDGE[r.family] ?? 1;
+  return f * wordW0(r, tbl, w);
+}
+
+function wordW0(r: Resolved, tbl: Map<string, number>, w: string): number {
   let sum = 0;
   let n = 0;
   const fallback = tbl.get('n') ?? 550;
@@ -162,7 +170,12 @@ export function fit(x: Ctx, s: string, st: TS, maxW: number, maxLines = 1, minSc
   return { ...st, size: Math.max(min, size) };
 }
 
-/** Narrowest wrap width that keeps the same line count — evens out ragged lines and orphans. */
+/**
+ * Balanced wrap width: the narrowest width that keeps the same line count, then
+ * moved to the middle of the range that produces exactly those line breaks, so
+ * small differences between estimated and real glyph widths (kerning) never
+ * change where lines break.
+ */
 export function balance(x: Ctx, s: string, st: TS, maxW: number): number {
   const base = wrap(x, s, st, maxW);
   if (base.n <= 1 || s.includes('\n')) return maxW;
@@ -173,8 +186,19 @@ export function balance(x: Ctx, s: string, st: TS, maxW: number): number {
     if (wrap(x, s, st, mid).n <= base.n) hi = mid;
     else lo = mid;
   }
-  // A little slack so real glyph metrics never push a word onto an extra line.
-  return Math.min(maxW, hi * 1.03 + 2);
+  const at = wrap(x, s, st, hi);
+  // Smallest width at which some line would pull up the next line's first word.
+  const r = res(x, st);
+  const tbl = tableFor(r.family, r.weight);
+  const spaceW = ((tbl.get(' ') ?? 250) / 1000) * r.size + r.tracking * r.size;
+  let over = Infinity;
+  for (let i = 0; i < at.n - 1; i++) {
+    const next = at.lines[i + 1].split(' ')[0];
+    const str = r.upper ? next.toUpperCase() : next;
+    over = Math.min(over, at.widths[i] + spaceW + wordW(r, tbl, str));
+  }
+  const stable = over === Infinity ? at.w * 1.04 : (at.w + over) / 2;
+  return Math.min(maxW, Math.max(at.w + 2, stable));
 }
 
 export type TOpts = Partial<Omit<TextLayer, 'type' | 'id' | 'text' | 'size' | 'font'>>;

@@ -364,7 +364,7 @@ const kpiGrid: Recipe = {
     const bottom = H - x.pick({ landscape: 10 * u, square: 7 * u, portrait: 8 * u, default: 16 * u });
     const rowsN = 4 / colsN;
     const th = (bottom - gridTop - gap * (rowsN - 1)) / rowsN;
-    const tq = Math.min(tw / 36, th / 28);
+    const tq = Math.min(tw / 32, th / 28);
     // Deltas sit in the top row unless a label would get squeezed; then they move under the value.
     const padQ = 3.2 * tq;
     const deltaBelow = tiles.some(([lab, , d]) => {
@@ -398,7 +398,7 @@ const kpiGrid: Recipe = {
         tw - pad * 2,
       );
       const vals = series(9, i * 7 + (x.seed % 5) + 3, up ? 1 : -0.6, 0.55);
-      const top = pad + 4 * tq + (deltaBelow ? 15.6 : 10.6) * tq;
+      const top = pad + 4 * tq + (deltaBelow ? 17 : 11.6) * tq;
       const spH = Math.max(th * 0.28, th - top);
       const spts = chartPts(vals, tw, spH, 0.14);
       const sy0 = th - spH;
