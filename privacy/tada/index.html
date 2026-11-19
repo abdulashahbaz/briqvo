@@ -1,0 +1,32 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tada privacy policy</title><meta name="robots" content="index,follow"><style>body{margin:0;background:#fff;color:#0b0b0b;font:17px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:56px 20px 80px}h1{font-size:2rem;line-height:1.2;margin:0 0 8px}
+h2{font-size:1.25rem;margin:2.2em 0 .4em}h3{font-size:1.05rem;margin:1.6em 0 .3em}a{color:inherit}
+.date{color:#555;margin:0 0 2em}ul,ol{padding-left:1.2em}li{margin:.3em 0}footer{margin-top:4em;color:#555;font-size:.9rem}
+table{border-collapse:collapse;width:100%;font-size:.95rem}th,td{border:1px solid #ccc;padding:6px 8px;text-align:left;vertical-align:top}
+@media(prefers-color-scheme:dark){body{background:#0b0b0b;color:#f2f2f2}.date,footer{color:#aaa}th,td{border-color:#444}}</style></head><body><main><h1>Tada privacy policy</h1>
+<p class="date">Last updated: 8 November 2026</p>
+<p>Tada is made by Briqvo (Abdullah Ventures LLC). This policy explains what happens to your information when you use the Tada app for Android and iPhone.</p>
+<h2>The short version</h2>
+<ul><li>To make a clip, <strong>the one photo you pick is sent to our server</strong>, checked for safety, and passed to our video-generation provider. <strong>Our server never stores your photo.</strong></li><li><strong>Finished clips stay on our server for 7 days</strong>, so the app can download them, then they're deleted. Your own copy lives on your phone until you delete it.</li><li>There's no sign-up. Tada doesn't ask for your name, email or phone number.</li><li>Plans and clip packs are bought through Google Play or the App Store. We use RevenueCat to handle purchases.</li></ul>
+<h2>Making a clip</h2>
+<p>When you pick a photo, Tada resizes it (at most 1440 pixels) and sends it to our server with the template and format you chose. Nothing else from your phone goes with it.</p>
+<ul><li><strong>Our server</strong> (on Cloudflare) holds the photo only in memory while your request is handled. It is never written to storage, logs or backups.</li><li><strong>The safety check.</strong> Before anything else, the photo is shown to a Google Gemini model, which answers only whether it shows nudity, someone who may be under 18, a public figure or violence. See <a href="https://ai.google.dev/gemini-api/terms">Google's Gemini API terms</a>.</li><li><strong>The video provider</strong> receives the photo and our template's instructions and sends back the video. We use one of these providers, depending on availability: PixVerse, Kling AI or MiniMax (Hailuo). Each processes the photo under its own terms and privacy policy and may keep requests for a limited time for safety and legal reasons.</li><li><strong>The finished clip</strong> is stored on our server (Cloudflare R2) for 7 days, linked to your random Tada account ID, then deleted automatically. Anyone with a clip's private link can open it until then; the link is only ever given to your app.</li></ul>
+<p>Please only use photos of yourself, or of people who said yes. Tada refuses photos of anyone who may be under 18.</p>
+<h2>Your Tada account</h2>
+<p>Tada has no sign-up. The first time you make a clip, our server creates a random account ID and keeps, for that ID: your clips balance and its history (purchases, clips made, refunds), whether you've used the free clip, how many clips you've started in the last hour and day (for the limits), and each clip's template, format, status and result link. The ID is stored on your phone.</p>
+<p>On Android, Tada asks Google Play Integrity to confirm the app is the real one from Google Play on a genuine device before giving your phone an account. That check doesn't identify you.</p>
+<p>Our server's provider (Cloudflare) handles network information such as IP addresses to deliver requests and stop attacks, and our server keeps short-lived error logs that never contain your photos or videos.</p>
+<h2>On your phone</h2>
+<p>Your clips, a copy of the photo used for each clip (for the "making it" screen), their thumbnails and your settings are kept in the app's private storage. Deleting a clip deletes these. Uninstalling Tada deletes all of it. When you tap Save, the clip is copied to your phone's videos (on iPhone, Tada asks for permission to add to your photo library; it never reads your library).</p>
+<h2>Reports</h2>
+<p>If you report a clip, our server keeps the report (the reason you picked, your account ID, the clip and when) until we've reviewed it. We may delete the clip from our server as a result.</p>
+<h2>Plans and purchases</h2>
+<p>Purchases go through Google Play or the App Store; we never see your payment details. RevenueCat receives your Tada account ID and your purchase history for Tada, and tells our server when you buy, renew or are refunded so we can add or remove clips. See <a href="https://www.revenuecat.com/privacy">RevenueCat's privacy policy</a>.</p>
+<h2>What we don't do</h2>
+<ul><li>No ads, no analytics, no tracking across apps or websites.</li><li>We don't sell or share your information for advertising.</li><li>We don't use your photos or clips to train AI models.</li></ul>
+<h2>Children</h2>
+<p>Tada is for adults (18+). We don't knowingly collect information from children, and Tada refuses photos of anyone who may be under 18.</p>
+<h2>Deleting your data</h2>
+<p>Delete clips in the app (on the clip, tap the bin). To delete your account record (balance, history and any clips still on our server), email <a href="mailto:briqvo@gmail.com">briqvo@gmail.com</a> with the account ID shown at the bottom of Settings; we'll delete it within 30 days. Clips on our server are deleted automatically after 7 days anyway.</p>
+<h2>Changes and contact</h2>
+<p>We'll update this page if anything changes and change the date above. Questions: <a href="mailto:briqvo@gmail.com.">briqvo@gmail.com.</a></p><footer>Briqvo · <a href="mailto:briqvo@gmail.com">briqvo@gmail.com</a></footer></main></body></html>
