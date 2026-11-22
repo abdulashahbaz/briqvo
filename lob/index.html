@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#013529">
+<title>Padel scoreboard</title>
+<!--
+  Lob's scoreboard page. One static file: the whole event (names, rounds, scores) is in the address after "#", which
+  a browser never sends to a server, so nothing here is stored or logged. It reads the link exactly as the app writes
+  it (lob/src/lib/board.ts) and ranks players exactly as the app does (lob/src/lib/schedule.ts, standings); change
+  one, change the other. Publish this file at the address in board.ts (BASE). No tracking, no cookies, no outside files.
+-->
+<style>
+  :root { --green: #013529; --court: #0A6B49; --deep: #075239; --cream: #F7F3EA; --lime: #CBF504; --ink: #052A1E; --muted: #A9C7B8; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html { background: var(--green); }
+  body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--cream); background: radial-gradient(120% 60% at 80% -10%, rgba(14,138,92,.55), transparent 60%), radial-gradient(90% 50% at 0% 0%, rgba(156,217,27,.16), transparent 60%), var(--green); min-height: 100vh; }
+  main { max-width: 560px; margin: 0 auto; padding: 28px 20px 40px; }
+  .kicker { margin: 0; font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--lime); }
+  h1 { margin: 6px 0 0; font-size: clamp(30px, 9vw, 42px); line-height: 1.05; letter-spacing: -.03em; font-weight: 800; overflow-wrap: anywhere; }
+  .club { margin: 6px 0 0; font-size: 15px; color: var(--muted); }
+  .head { display: flex; gap: 14px; align-items: flex-start; }
+  .head div { flex: 1; min-width: 0; }
+  .ball { flex: none; width: 34px; height: 34px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 0 3px rgba(255,255,255,.9) inset, 0 8px 18px rgba(0,0,0,.35); margin-top: 6px; }
+  /* The table sits on a court seen from above. */
+  .court { position: relative; margin-top: 22px; padding: 16px 14px; border-radius: 26px; background: linear-gradient(135deg, var(--court), var(--deep)); box-shadow: 0 16px 34px rgba(0,20,14,.45); }
+  .court::before { content: ""; position: absolute; inset: 7px; border: 2px solid rgba(255,255,255,.45); border-radius: 20px; pointer-events: none; }
+  .row { position: relative; display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 6px 12px; border-radius: 14px; margin: 5px 0; background: rgba(0,0,0,.2); }
+  .row.first { background: var(--lime); color: var(--ink); }
+  .rank { width: 22px; font-weight: 800; font-size: 15px; opacity: .75; }
+  .row.first .rank { opacity: 1; }
+  .who { flex: 1; min-width: 0; }
+  .who b { display: block; font-size: 17px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .who span { display: block; font-size: 12px; opacity: .72; }
+  .pts { font-size: 24px; font-weight: 800; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+  h2 { margin: 30px 4px 10px; font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .round { border: 1px solid rgba(255,255,255,.13); background: rgba(255,255,255,.06); border-radius: 22px; padding: 14px 16px; margin: 10px 0; }
+  .round h3 { margin: 0 0 8px; font-size: 16px; font-weight: 800; letter-spacing: -.01em; display: flex; justify-content: space-between; }
+  .round h3 small { font-size: 12px; font-weight: 700; color: var(--lime); letter-spacing: .06em; text-transform: uppercase; }
+  .match { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; padding: 9px 0; border-top: 1px solid rgba(255,255,255,.1); font-size: 15px; }
+  .match:first-of-type { border-top: 0; }
+  .pair { min-width: 0; overflow-wrap: anywhere; line-height: 1.25; }
+  .pair.b { text-align: right; }
+  .pair.won { font-weight: 800; color: #fff; }
+  .score { font-weight: 800; font-size: 17px; font-variant-numeric: tabular-nums; padding: 4px 10px; border-radius: 10px; background: rgba(0,0,0,.24); white-space: nowrap; }
+  .score.none { opacity: .5; font-weight: 600; }
+  .rest { margin: 8px 0 0; font-size: 13px; color: var(--muted); }
+  footer { margin-top: 30px; text-align: center; font-size: 13px; color: var(--muted); line-height: 1.5; }
+  footer a { display: inline-block; margin-top: 14px; padding: 12px 20px; border-radius: 999px; background: var(--lime); color: var(--ink); font-weight: 800; text-decoration: none; }
+  footer .legal { margin-top: 18px; font-size: 12px; }
+  footer .legal a { display: inline; margin: 0; padding: 4px 2px; background: none; color: var(--muted); font-weight: 400; text-decoration: underline; }
+  .none { text-align: center; padding: 30vh 0 0; font-size: 18px; line-height: 1.4; }
+</style>
+</head>
+<body>
+<main id="page"></main>
+<script>
+(function () {
+  var WORDS = {
+    en: { a: 'Americano', m: 'Mexicano', final: 'Final table', live: 'Table after round {n}', start: 'Round 1 is on', rounds: 'Rounds', round: 'Round {n}', done: 'played', played: '{n} played', rest: 'Resting: ', asof: 'Scores as of {t}. Ask the organiser for a fresh link after the next round.', made: 'Run your own padel night with Lob', none: 'This scoreboard link is not complete. Ask the organiser to send it again.' },
+    es: { a: 'Americano', m: 'Mexicano', final: 'Tabla final', live: 'Tabla tras la ronda {n}', start: 'Ronda 1 en juego', rounds: 'Rondas', round: 'Ronda {n}', done: 'jugada', played: '{n} jugados', rest: 'Descansan: ', asof: 'Resultados a las {t}. Pide un enlace nuevo al organizador tras la próxima ronda.', made: 'Organiza tu propio americano con Lob', none: 'Este enlace está incompleto. Pide al organizador que lo envíe otra vez.' },
+    it: { a: 'Americano', m: 'Mexicano', final: 'Classifica finale', live: 'Classifica dopo il turno {n}', start: 'Turno 1 in corso', rounds: 'Turni', round: 'Turno {n}', done: 'giocato', played: '{n} giocate', rest: 'A riposo: ', asof: 'Punteggi alle {t}. Chiedi un nuovo link all’organizzatore dopo il prossimo turno.', made: 'Organizza la tua serata di padel con Lob', none: 'Questo link è incompleto. Chiedi all’organizzatore di inviarlo di nuovo.' },
+    pt: { a: 'Americano', m: 'Mexicano', final: 'Tabela final', live: 'Tabela após a ronda {n}', start: 'Ronda 1 em jogo', rounds: 'Rondas', round: 'Ronda {n}', done: 'jogada', played: '{n} jogados', rest: 'A descansar: ', asof: 'Resultados às {t}. Peça um link novo ao organizador depois da próxima ronda.', made: 'Organize a sua noite de padel com o Lob', none: 'Este link está incompleto. Peça ao organizador para o enviar de novo.' },
+    fr: { a: 'Americano', m: 'Mexicano', final: 'Classement final', live: 'Classement après le tour {n}', start: 'Tour 1 en cours', rounds: 'Tours', round: 'Tour {n}', done: 'joué', played: '{n} joués', rest: 'Au repos : ', asof: 'Scores à {t}. Demandez un nouveau lien à l’organisateur après le prochain tour.', made: 'Organisez votre soirée padel avec Lob', none: 'Ce lien est incomplet. Demandez à l’organisateur de le renvoyer.' },
+    sv: { a: 'Americano', m: 'Mexicano', final: 'Sluttabell', live: 'Tabell efter omgång {n}', start: 'Omgång 1 pågår', rounds: 'Omgångar', round: 'Omgång {n}', done: 'spelad', played: '{n} spelade', rest: 'Vilar: ', asof: 'Ställning kl. {t}. Be arrangören om en ny länk efter nästa omgång.', made: 'Ordna din egen padelkväll med Lob', none: 'Länken är inte komplett. Be arrangören skicka den igen.' },
+    nl: { a: 'Americano', m: 'Mexicano', final: 'Eindstand', live: 'Stand na ronde {n}', start: 'Ronde 1 is bezig', rounds: 'Rondes', round: 'Ronde {n}', done: 'gespeeld', played: '{n} gespeeld', rest: 'Rust: ', asof: 'Stand om {t}. Vraag de organisator om een nieuwe link na de volgende ronde.', made: 'Organiseer je eigen padelavond met Lob', none: 'Deze link is niet compleet. Vraag de organisator hem opnieuw te sturen.' }
+  };
+  var lang = (navigator.language || 'en').slice(0, 2);
+  var L = WORDS[lang] || WORDS.en;
+  var D = '0123456789abcdefghijklmnopqrstuvwxyz';
+  var page = document.getElementById('page');
+
+  // Everything that comes from the link is put on the page as text, never as markup.
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  function word(s, v) { return s.replace(/\{(\w)\}/, v); }
+
+  function decode(text) {
+    try {
+      var b64 = text.replace(/^#/, '').replace(/-/g, '+').replace(/_/g, '/');
+      b64 += '==='.slice((b64.length + 3) % 4);
+      var s = JSON.parse(decodeURIComponent(escape(atob(b64))));
+      if (!s || s.v !== 1 || !Array.isArray(s.l) || s.l.length < 4 || s.l.length > D.length) return null;
+      var points = Number(s.p);
+      if (!(points >= 1 && points < D.length) || points % 1) return null;
+      var players = s.l.map(function (x) { return String(x).slice(0, 24); });
+      var rounds = [];
+      var parts = String(s.r || '').split('.');
+      for (var i = 0; i < parts.length; i++) {
+        var part = parts[i];
+        if (!part.length || part.length % 5) return null;
+        var matches = [], on = {};
+        for (var k = 0; k < part.length; k += 5) {
+          var p = [0, 1, 2, 3].map(function (j) { return D.indexOf(part[k + j]); });
+          var sa = part[k + 4] === '-' ? null : D.indexOf(part[k + 4]);
+          for (var j = 0; j < 4; j++) {
+            if (p[j] < 0 || p[j] >= players.length || on[p[j]]) return null;
+            on[p[j]] = true;
+          }
+          if (sa !== null && (sa < 0 || sa > points)) return null;
+          matches.push({ a: [p[0], p[1]], b: [p[2], p[3]], sa: sa });
+        }
+        var resting = [];
+        for (var q = 0; q < players.length; q++) if (!on[q]) resting.push(q);
+        rounds.push({ matches: matches, resting: resting });
+      }
+      return { name: String(s.n || '').slice(0, 60), club: String(s.c || '').slice(0, 60), format: s.f === 'm' ? 'm' : 'a', points: points, players: players, rounds: rounds, planned: Number(s.k) || rounds.length, at: (Number(s.t) || 0) * 60000 };
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Most points first, then most wins, then the better points difference (as in the app).
+  function standings(e) {
+    var rows = e.players.map(function (_, i) { return { player: i, points: 0, played: 0, wins: 0, diff: 0 }; });
+    e.rounds.forEach(function (r) {
+      r.matches.forEach(function (m) {
+        if (m.sa === null) return;
+        var sb = e.points - m.sa;
+        m.a.forEach(function (i) { rows[i].points += m.sa; rows[i].played++; rows[i].diff += m.sa - sb; if (m.sa > sb) rows[i].wins++; });
+        m.b.forEach(function (i) { rows[i].points += sb; rows[i].played++; rows[i].diff += sb - m.sa; if (sb > m.sa) rows[i].wins++; });
+      });
+    });
+    return rows.sort(function (x, y) { return y.points - x.points || y.wins - x.wins || y.diff - x.diff || x.player - y.player; });
+  }
+  function complete(r) { return r.matches.every(function (m) { return m.sa !== null; }); }
+
+  function render() {
+    page.textContent = '';
+    var e = decode(location.hash);
+    if (!e) { page.appendChild(el('p', 'none', L.none)); return; }
+    document.title = e.name || document.title;
+    var done = e.rounds.filter(complete).length;
+    var over = e.rounds.every(complete) && (e.format === 'a' || e.rounds.length >= e.planned);
+
+    var head = el('div', 'head');
+    var title = el('div');
+    title.appendChild(el('p', 'kicker', L[e.format] + ' · ' + (over ? L.final : done ? word(L.live, done) : L.start)));
+    title.appendChild(el('h1', '', e.name));
+    if (e.club) title.appendChild(el('p', 'club', e.club));
+    head.appendChild(title);
+    head.appendChild(el('div', 'ball'));
+    page.appendChild(head);
+
+    var court = el('div', 'court');
+    standings(e).forEach(function (row, i) {
+      var line = el('div', 'row' + (i === 0 && row.played > 0 ? ' first' : ''));
+      line.appendChild(el('span', 'rank', String(i + 1)));
+      var who = el('div', 'who');
+      who.appendChild(el('b', '', e.players[row.player]));
+      who.appendChild(el('span', '', word(L.played, row.played) + ' · ' + (row.diff > 0 ? '+' : '') + row.diff));
+      line.appendChild(who);
+      line.appendChild(el('span', 'pts', String(row.points)));
+      court.appendChild(line);
+    });
+    page.appendChild(court);
+
+    page.appendChild(el('h2', '', L.rounds));
+    e.rounds.forEach(function (r, i) {
+      var box = el('div', 'round');
+      var h = el('h3', '', word(L.round, i + 1));
+      if (complete(r)) h.appendChild(el('small', '', L.done));
+      box.appendChild(h);
+      r.matches.forEach(function (m) {
+        var sb = m.sa === null ? null : e.points - m.sa;
+        var line = el('div', 'match');
+        var names = function (p) { return e.players[p[0]] + ' + ' + e.players[p[1]]; };
+        line.appendChild(el('span', 'pair' + (m.sa !== null && m.sa > sb ? ' won' : ''), names(m.a)));
+        line.appendChild(el('span', 'score' + (m.sa === null ? ' none' : ''), m.sa === null ? '– : –' : m.sa + ' : ' + sb));
+        line.appendChild(el('span', 'pair b' + (m.sa !== null && sb > m.sa ? ' won' : ''), names(m.b)));
+        box.appendChild(line);
+      });
+      if (r.resting.length) box.appendChild(el('p', 'rest', L.rest + r.resting.map(function (p) { return e.players[p]; }).join(', ')));
+      page.appendChild(box);
+    });
+
+    var foot = el('footer');
+    if (e.at && !over) foot.appendChild(el('div', '', word(L.asof, new Date(e.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }))));
+    var link = el('a', '', L.made);
+    link.href = 'https://play.google.com/store/apps/details?id=com.briqvo.lob';
+    foot.appendChild(link);
+    // Names typed by someone else are shown here, so readers get a way to report the page and to read how it works.
+    var legal = el('div', 'legal');
+    var report = el('a', '', 'Report this page');
+    report.href = 'mailto:briqvo@gmail.com?subject=' + encodeURIComponent('Report a Lob scoreboard') + '&body=' + encodeURIComponent('Why I am reporting this page:\n\n\nPage: ' + location.href);
+    var priv = el('a', '', 'Privacy');
+    priv.href = 'https://abdulashahbaz.github.io/briqvo/privacy/lob/';
+    legal.appendChild(report); legal.appendChild(document.createTextNode(' · ')); legal.appendChild(priv);
+    foot.appendChild(legal);
+    page.appendChild(foot);
+  }
+
+  window.addEventListener('hashchange', render);
+  render();
+})();
+</script>
+</body>
+</html>
