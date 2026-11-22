@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>A question for you</title>
+<!--
+  Pop's hosted page. One static file: the whole page (names, question, colour) is in the address after "#", which a
+  browser never sends to a server, so nothing here is stored or logged. It behaves exactly like the preview in the
+  app (pop/src/components/Ask.tsx); change one, change the other. Publish this file at the address in
+  pop/src/lib/pages.ts (BASE). No tracking, no cookies, no outside files.
+-->
+<style>
+  :root { --c: #7C37FD; --d: #3a1a78; --ink: #12101F; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; margin: 0; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: linear-gradient(160deg, var(--c), var(--d)); color: #fff; overflow: hidden; touch-action: manipulation; }
+  main { position: relative; height: 100%; max-width: 520px; margin: 0 auto; padding: 24px 24px 56px; display: flex; flex-direction: column; justify-content: center; }
+  .to { font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; opacity: .86; margin: 0 0 14px; }
+  .bubble { background: #fff; color: var(--ink); border-radius: 30px; padding: 22px; box-shadow: 0 14px 30px rgba(0,0,0,.22); position: relative; }
+  .bubble::after { content: ""; position: absolute; left: 34px; bottom: -28px; border: 16px solid transparent; border-top-color: #fff; border-left-color: #fff; border-radius: 4px; transform: skewX(-18deg); }
+  h1 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(26px, 8vw, 34px); line-height: 1.18; margin: 0; letter-spacing: -.01em; overflow-wrap: anywhere; }
+  .from { font-size: 14px; opacity: .6; margin: 10px 0 0; }
+  .arena { position: relative; height: 34vh; min-height: 170px; margin-top: 44px; }
+  button { font: inherit; font-weight: 700; border: 0; cursor: pointer; height: 56px; min-width: 132px; padding: 0 18px; border-radius: 28px; position: absolute; }
+  #yes { left: 0; top: calc(50% - 28px); background: #fff; color: var(--d); font-size: 19px; box-shadow: 0 10px 24px rgba(0,0,0,.28); transform-origin: left center; transition: transform .35s cubic-bezier(.3,1.6,.5,1); z-index: 1; }
+  #no { right: 0; top: calc(50% - 28px); background: rgba(255,255,255,.14); color: #fff; font-size: 17px; border: 2px solid rgba(255,255,255,.85); transition: left .28s cubic-bezier(.3,1.4,.5,1), top .28s cubic-bezier(.3,1.4,.5,1); }
+  .done { display: none; text-align: center; }
+  .done b { display: block; font-family: Georgia, serif; font-size: clamp(56px, 20vw, 96px); line-height: 1.05; letter-spacing: -.03em; animation: pop .6s cubic-bezier(.3,1.7,.5,1) both; }
+  .done p { font-size: 20px; font-weight: 700; margin: 12px 0 0; }
+  .done small { display: block; font-size: 15px; opacity: .84; margin-top: 14px; }
+  .said .ask { display: none; } .said .done { display: block; }
+  .badge { position: absolute; left: 0; right: 0; bottom: 30px; text-align: center; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.72); text-decoration: none; }
+  .legal { position: absolute; left: 0; right: 0; bottom: 8px; margin: 0; text-align: center; font-size: 11px; color: rgba(255,255,255,.6); }
+  .legal a { color: inherit; padding: 4px 6px; }
+  .bit { position: fixed; left: 0; top: 0; pointer-events: none; will-change: transform, opacity; }
+  @keyframes pop { from { transform: scale(.3); opacity: 0; } to { transform: none; opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { #yes, #no { transition: none; } .done b { animation: none; } }
+</style>
+</head>
+<body>
+<main id="page">
+  <div class="ask">
+    <p class="to" id="to"></p>
+    <div class="bubble"><h1 id="q"></h1><p class="from" id="from"></p></div>
+    <div class="arena" id="arena"><button id="yes"></button><button id="no"></button></div>
+  </div>
+  <div class="done"><b id="big"></b><p id="msg"></p><small id="who"></small></div>
+  <a class="badge" id="badge" href="https://play.google.com/store/apps/details?id=com.briqvo.pop">Made with Pop</a>
+  <!-- Always shown, also when Pop Plus hides the badge: this page shows text that someone else typed, so readers need a way to report it. -->
+  <p class="legal"><a id="report" href="mailto:briqvo@gmail.com?subject=Report%20a%20Pop%20page">Report this page</a> · <a href="https://abdulashahbaz.github.io/briqvo/privacy/pop/">Privacy</a></p>
+</main>
+<script>
+(function () {
+  var WORDS = {
+    en: { to: 'For ', from: 'from ', d: ['Are you sure?', 'Really sure?', 'Think again', 'Last chance', 'Wrong button', 'Just say yes'], none: 'This link is not complete. Ask for it again.' },
+    es: { to: 'Para ', from: 'de ', d: ['¿Seguro?', '¿De verdad?', 'Piénsalo', 'Última oportunidad', 'Botón equivocado', 'Di que sí'], none: 'Este enlace está incompleto. Pídelo otra vez.' },
+    fr: { to: 'Pour ', from: 'de ', d: ['Sûr ?', 'Vraiment ?', 'Réfléchis', 'Dernière chance', 'Mauvais bouton', 'Dis oui'], none: 'Ce lien est incomplet. Redemande-le.' },
+    pt: { to: 'Para ', from: 'de ', d: ['Tem certeza?', 'Mesmo?', 'Pense bem', 'Última chance', 'Botão errado', 'Diga sim'], none: 'Este link está incompleto. Peça de novo.' },
+    ar: { to: 'إلى ', from: 'من ', d: ['متأكد؟', 'حقًا؟', 'فكّر مرة أخرى', 'آخر فرصة', 'الزر الخطأ', 'قل نعم'], none: 'هذا الرابط غير مكتمل. اطلبه مرة أخرى.' }
+  };
+  var L = WORDS[(navigator.language || 'en').slice(0, 2)] || WORDS.en;
+  var $ = function (id) { return document.getElementById(id); };
+
+  function read() {
+    try {
+      var s = location.hash.replace(/^#/, '').replace(/-/g, '+').replace(/_/g, '/');
+      while (s.length % 4) s += '=';
+      var o = JSON.parse(decodeURIComponent(escape(atob(s))));
+      return o && o.v === 1 && typeof o.q === 'string' ? o : null;
+    } catch (e) { return null; }
+  }
+  // Text only ever goes in through textContent, so nothing in a link can run as code.
+  var cut = function (v, n) { return String(v == null ? '' : v).slice(0, n); };
+  var p = read();
+  if (!p) { $('q').textContent = L.none; $('arena').style.display = 'none'; return; }
+
+  var color = /^#[0-9a-fA-F]{6}$/.test(p.c) ? p.c : '#7C37FD';
+  var n = parseInt(color.slice(1), 16);
+  var deep = 'rgb(' + [n >> 16 & 255, n >> 8 & 255, n & 255].map(function (x) { return Math.round(x * 0.55); }).join(',') + ')';
+  document.documentElement.style.setProperty('--c', color);
+  document.documentElement.style.setProperty('--d', deep);
+  document.querySelector('meta[name=viewport]').insertAdjacentHTML('afterend', '<meta name="theme-color" content="' + color + '">');
+  if (/^ar/.test(navigator.language || '')) document.documentElement.dir = 'rtl';
+
+  var to = cut(p.o, 40), from = cut(p.f, 40), yesWord = cut(p.y, 24) || 'Yes', noWord = cut(p.n, 24) || 'No';
+  $('to').textContent = to ? L.to + to : '';
+  $('q').textContent = cut(p.q, 140);
+  $('from').textContent = from ? L.from + from : '';
+  $('yes').textContent = yesWord; $('no').textContent = noWord;
+  $('big').textContent = yesWord; $('msg').textContent = cut(p.d, 140);
+  $('who').textContent = [from, to].filter(Boolean).join('  +  ');
+  if (p.b === 0) $('badge').style.display = 'none';
+  // The page lives in its link, so a report has to carry the link for us to see what was reported.
+  $('report').href = 'mailto:briqvo@gmail.com?subject=' + encodeURIComponent('Report a Pop page') + '&body=' + encodeURIComponent('Why I am reporting this page:\n\n\nPage: ' + location.href);
+  document.title = cut(p.q, 60);
+
+  var yes = $('yes'), no = $('no'), arena = $('arena'), dodges = 0;
+  function dodge(e) {
+    if (e) e.preventDefault();
+    dodges++;
+    // Somewhere else in the room: away from where it is now, and never under the Yes, which has just grown.
+    var a = arena.getBoundingClientRect(), b = no.getBoundingClientRect(), scale = Math.min(1.6, 1 + dodges * 0.1);
+    var yesW = yes.offsetWidth * scale + 14, yesH = yes.offsetHeight * scale + 14, yesTop = (a.height - yesH) / 2;
+    var x = a.width - b.width, y = dodges % 2 ? 0 : a.height - b.height;
+    for (var i = 0; i < 12; i++) {
+      var tx = Math.random() * (a.width - b.width), ty = Math.random() * (a.height - b.height);
+      var far = Math.hypot(tx - (b.left - a.left), ty - (b.top - a.top)) > a.width * 0.3;
+      var under = tx < yesW && ty + b.height > yesTop && ty < yesTop + yesH;
+      if (far && !under) { x = tx; y = ty; break; }
+    }
+    no.style.right = 'auto'; no.style.left = x + 'px'; no.style.top = y + 'px';
+    no.textContent = L.d[Math.min(dodges, L.d.length) - 1];
+    yes.style.transform = 'scale(' + scale + ')';
+    if (navigator.vibrate) navigator.vibrate(12);
+  }
+  // It leaves as the finger or the pointer arrives: pressing it is the joke.
+  no.addEventListener('pointerdown', dodge);
+  no.addEventListener('mouseenter', dodge);
+  no.addEventListener('focus', function () { yes.focus(); });
+
+  var TUNES = { chime: [[784, 0], [988, .14], [1175, .28], [1568, .44]], waltz: [[523, 0], [659, .22], [784, .44], [659, .66], [784, .88], [1047, 1.1]], fanfare: [[523, 0], [523, .14], [523, .28], [698, .42], [880, .7], [1047, .98]] };
+  function play(name) {
+    var notes = TUNES[name], AC = window.AudioContext || window.webkitAudioContext;
+    if (!notes || !AC) return;
+    var ac = new AC();
+    notes.forEach(function (nt) {
+      var o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime + nt[1];
+      o.type = 'triangle'; o.frequency.value = nt[0];
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.22, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.5);
+      o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + 0.55);
+    });
+  }
+
+  function party(kind) {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var cols = ['#FFFFFF', '#FFE08A', '#FFB3C7', '#B79CFF', '#8FE3FF'], W = innerWidth, H = innerHeight;
+    for (var i = 0; i < 40; i++) (function (i) {
+      var el = document.createElement('div'), size = 8 + Math.random() * 10, col = cols[i % cols.length];
+      el.className = 'bit';
+      if (kind === 'hearts') { el.textContent = '♥'; el.style.color = col; el.style.fontSize = size * 2 + 'px'; }
+      else { el.style.width = size + 'px'; el.style.height = (kind === 'fireworks' ? size : size * 0.55) + 'px'; el.style.borderRadius = kind === 'fireworks' ? '50%' : '2px'; el.style.background = col; }
+      document.body.appendChild(el);
+      var frames, opts;
+      if (kind === 'fireworks') {
+        var ang = i / 40 * Math.PI * 2, r = (0.25 + Math.random() * 0.3) * H;
+        frames = [{ transform: 'translate(' + W / 2 + 'px,' + H * 0.38 + 'px)', opacity: 1 }, { transform: 'translate(' + (W / 2 + Math.cos(ang) * r) + 'px,' + (H * 0.38 + Math.sin(ang) * r) + 'px) scale(.6)', opacity: 0 }];
+        opts = { duration: 1500, delay: Math.random() * 900, easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'both' };
+      } else {
+        var x = Math.random() * W, turn = Math.random() * 360;
+        frames = [{ transform: 'translate(' + x + 'px,-30px) rotate(' + turn + 'deg)' }, { transform: 'translate(' + (x + 20) + 'px,' + (H + 40) + 'px) rotate(' + (turn + 420) + 'deg)' }];
+        opts = { duration: 2600, delay: Math.random() * 900, easing: 'ease-in', fill: 'both' };
+      }
+      el.animate(frames, opts).onfinish = function () { el.remove(); };
+    })(i);
+  }
+
+  yes.addEventListener('click', function () {
+    $('page').classList.add('said');
+    party(['confetti', 'hearts', 'fireworks'].indexOf(p.x) >= 0 ? p.x : 'confetti');
+    play(p.m);
+    if (navigator.vibrate) navigator.vibrate([20, 40, 60]);
+  });
+})();
+</script>
+</body>
+</html>
